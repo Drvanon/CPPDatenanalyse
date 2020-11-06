@@ -23,6 +23,11 @@ int get_file_length(string filename) {
     return c;
 }
 
+/**
+  Load csv file into rows.
+  @param filename Filename of the file to be read.
+  @param length Number of rows.
+*/
 InputRow* load_data_file(string filename, int length) {
     InputRow* rows = new InputRow[length];
 
@@ -70,6 +75,11 @@ cleanup:
     throw std::overflow_error("File length different than indicated.");
 }
 
+/**
+  Interprete input into measurements.
+  @param rows Rows that contain input.
+  @param length Number of rows.
+*/
 Measurement* interprete_data(InputRow* rows, int length) {
     Measurement* measurements = new Measurement[length];
     for (int i=0;i<length;i++) {
@@ -79,6 +89,11 @@ Measurement* interprete_data(InputRow* rows, int length) {
     return measurements;
 }
 
+/**
+  Determine speed from measurements.
+  @param measurements Measurents that need to be calculated from.
+  @param length Number of measurements.
+*/
 float* calculate_speeds(Measurement* measurements, int length) {
     float* speeds = new float[length];
     for (int i=0;i<length;i++) {
