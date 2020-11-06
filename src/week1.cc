@@ -83,6 +83,7 @@ int main (int argc, char * argv[]) {
                     << "Average speed: " << average_speed << endl
                     << "Standard deviation: " << std_speed << endl;
         output_file.close();
+        exit(EXIT_SUCCESS);
     }
 
     return 0;
