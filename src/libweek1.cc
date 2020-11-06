@@ -1,6 +1,7 @@
 #include "libweek1.h"
 
 #include <iostream>
+#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -100,4 +101,42 @@ float* calculate_speeds(Measurement* measurements, int length) {
         speeds[i] = measurements[i].distance / measurements[i].time;
     }
     return speeds;
+}
+
+/**
+  Calculate the average of an array.
+  @param values Values that will be averaged.
+  @param length Number of values.
+*/
+float average(float* values, int length) {
+    float sum = 0;
+    for (int i=0;i<length;i++) {
+        sum += values[i];
+    }
+    return sum / length;
+}
+
+/**
+  Calculate the standard deviation of an array.
+  @param values Values of which the std will be found.
+  @param length Number of values.
+*/
+float standard_deviation(float* values, int length) {
+    float mean = average(values, length);
+
+    return standard_deviation(values, length, mean);
+}
+
+/**
+  Calculate the standard deviation of an array, without recalculating the average.
+  @param values Values of which the std will be found.
+  @param length Number of values.
+  @param average Average to assume.
+*/
+float standard_deviation(float* values, int length, float average) {
+    float var = 0;
+    for (int i=0;i<length;i++) {
+        var += pow(values[i] - average, 2);
+    }
+    return sqrt(var/length);
 }

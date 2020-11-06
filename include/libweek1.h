@@ -20,5 +20,8 @@ int get_file_length(string filename);
 InputRow* load_data_file(string filename, int length);
 Measurement* interprete_data(InputRow* rows, int length);
 float* calculate_speeds(Measurement* measurements, int length);
+float average(float* values, int length);
+float standard_deviation(float* values, int length);
+float standard_deviation(float* values, int length, float average);
 
 #endif

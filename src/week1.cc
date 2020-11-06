@@ -11,9 +11,10 @@ void print_help_message(char * argv[]) {
          << endl
          << "   Analyse FILENAME. Note that this must be a csv file." << endl
          << endl
-         << " -f\t Get line length." << endl
-         << " -g\t Get average speed." << endl
-         << " -s\t Get standard deviation." << endl;
+         << " -f\tGet line length." << endl
+         << " -g\tGet average speed." << endl
+         << " -s\tGet standard deviation." << endl
+         << " -a\tGet all variables and store them in results.txt" << endl;
 }
 
 int main (int argc, char * argv[]) {
@@ -57,6 +58,20 @@ int main (int argc, char * argv[]) {
     InputRow* rows = load_data_file(input_filename, length);
     Measurement* measurements = interprete_data(rows, length);
     delete rows;
+
+    float* speeds = calculate_speeds(measurements, length);
+    delete measurements;
+
+    float average_speed = average(speeds, length);
+    if (mode == AVG_SPEED) {
+        cout << average_speed << endl;
+        exit(EXIT_SUCCESS);
+    }
+
+    float std_speed = standard_deviation(speeds, length, average_speed);
+    if (mode == STD_SPEED) {
+        cout << std_speed << endl;
+    }
 
     return 0;
 }
