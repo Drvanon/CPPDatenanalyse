@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <stdlib.h>
 #include <unistd.h>
@@ -71,6 +72,17 @@ int main (int argc, char * argv[]) {
     float std_speed = standard_deviation(speeds, length, average_speed);
     if (mode == STD_SPEED) {
         cout << std_speed << endl;
+        exit(EXIT_SUCCESS);
+    }
+
+    if (mode == ALL) {
+        ofstream output_file;
+        output_file.open("results.txt");
+        output_file << "Input file: " << input_filename << endl
+                    << "Number of rows: " << length << endl
+                    << "Average speed: " << average_speed << endl
+                    << "Standard deviation: " << std_speed << endl;
+        output_file.close();
     }
 
     return 0;
