@@ -32,33 +32,18 @@ InputRow* load_data_file(string filename, int length) {
     InputRow* rows = new InputRow[length];
 
     string row;
-    ifstream input_file;
-    input_file.open(filename, ios::in);
+    ifstream input_file(filename, ios::in);
     int row_index = 0;
-    while (getline(input_file, row)) {
+    while (
+            input_file >> rows[row_index].start_time
+                       >> rows[row_index].stop_time
+                       >> rows[row_index].distance
+    ) {
         // Ensure no buffer overflow!
         if (row_index > length) {
             goto cleanup;
         }
 
-        int column_index = 0;
-        stringstream row_ss(row);
-        string column;
-        while (getline(row_ss, column, ',')) {
-            float new_value = stof(column);
-            switch (column_index) {
-                case 0:
-                    rows[row_index].start_time = new_value;
-                    break;
-                case 1:
-                    rows[row_index].stop_time = new_value;
-                    break;
-                case 2:
-                    rows[row_index].distance = new_value;
-                    break;
-            }
-            column_index++;
-        }
         row_index++;
     }
     // Undefined behaviour is bad behaviour! (Length could be shorter than file.)

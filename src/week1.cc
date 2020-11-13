@@ -40,8 +40,11 @@ int main (int argc, char * argv[]) {
             case 'a': {
                 mode = ALL; break;
             }
+            default:
             case 'h':
                 print_help_message(argv);
+                exit(EXIT_SUCCESS);
+                break;
         }
     }
 
@@ -83,6 +86,7 @@ int main (int argc, char * argv[]) {
     }
 
     if (mode == ALL) {
+        cout << "Ran in ALL mode. Please consult 'results.txt' for the output." << endl;
         ofstream output_file("results.txt");
         output_file << "Input file: " << input_filename << endl
                     << "Number of rows: " << length << endl
