@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(woche1)
 
 add_library(libweek1 src/libweek1.cc)
-target_include_directories(libweek1 PRIVATE include)
+target_include_directories(libweek1 PUBLIC include)
 
 set(SOURCE_FILES src/week1.cc)
 add_executable(week1 ${SOURCE_FILES})
