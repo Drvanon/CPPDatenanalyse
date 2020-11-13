@@ -21,6 +21,10 @@ void print_help_message(char * argv[]) {
 int main (int argc, char * argv[]) {
     enum {FILE_SIZE, AVG_SPEED, STD_SPEED, ALL} mode = ALL;
 
+    /* Parse the command line arguments using getopt. More methods for argument
+       parsing are available, most of which are better than this one. However
+       getopt is exceedingly simple, which is why I chose it.
+    */
     int opt;
     while ((opt = getopt(argc, argv, "fgsah")) != -1) {
         switch (opt) {
@@ -42,6 +46,9 @@ int main (int argc, char * argv[]) {
     }
 
     string input_filename;
+    // optind is an integer that indexes argv. After interpreting the flags it
+    // points to the first argument after that. I require a file name from the
+    // command line which is why I require one more option.
     if (optind >= argc) {
         print_help_message(argv);
         exit(EXIT_FAILURE);
@@ -58,10 +65,10 @@ int main (int argc, char * argv[]) {
 
     InputRow* rows = load_data_file(input_filename, length);
     Measurement* measurements = interprete_data(rows, length);
-    delete rows;
+    delete [] rows;
 
     float* speeds = calculate_speeds(measurements, length);
-    delete measurements;
+    delete [] measurements;
 
     float average_speed = average(speeds, length);
     if (mode == AVG_SPEED) {
@@ -76,8 +83,7 @@ int main (int argc, char * argv[]) {
     }
 
     if (mode == ALL) {
-        ofstream output_file;
-        output_file.open("results.txt");
+        ofstream output_file("results.txt");
         output_file << "Input file: " << input_filename << endl
                     << "Number of rows: " << length << endl
                     << "Average speed: " << average_speed << endl

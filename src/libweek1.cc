@@ -14,8 +14,7 @@ using namespace std;
   @return line count
 */
 int get_file_length(string filename) {
-    ifstream input_file;
-    input_file.open(filename, ios::in);
+    ifstream input_file(filename, ios::in);
 
     string _;
     int c = 0;
