@@ -23,10 +23,6 @@ target_compile_options(week1 PRIVATE -Wall -Wextra -pedantic -Werror)
 add_library(libweek2 src/libweek2.cc)
 target_include_directories(libweek2 PUBLIC include)
 
-add_executable(week2 src/week2.cc)
-target_link_libraries(week2 libweek2)
-target_include_directories(week2 PUBLIC include)
-
 add_executable(week2tests src/week2tests.cc)
 catch_discover_tests(week2tests)
 target_include_directories(week2tests PUBLIC include)
