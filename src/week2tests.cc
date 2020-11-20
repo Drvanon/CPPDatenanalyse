@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch2/catch.hpp>
+#include <vector>
 #include "week2.h"
 
 TEST_CASE( "Summing with complex numbers", "[complex]" ) {
@@ -42,4 +43,18 @@ TEST_CASE( "Length of a complex number should be defined as the Euclidian length
 TEST_CASE( "Complex numbers should be represent as a+ib", "[complex]") {
     REQUIRE( Complex().toString() == "0.000000+i0.000000" );
     REQUIRE( Complex(1, 2).toString() == "1.000000+i2.000000" );
+}
+
+TEST_CASE( "Polynomials should be callable", "[polynomial]" ) {
+    Polynomial p = Polynomial({1});
+    std::vector<double> coefficients = {1};
+;
+    REQUIRE(p(1) == 1);
+    REQUIRE(p(1) == p.evaluate(1) );
+}
+
+TEST_CASE( "Polynomials should behave like the mathematical equivalent", "[polynomial]" ) {
+    Polynomial p = Polynomial({1, 1, 1, 1, 1, 1, 1});
+    REQUIRE(p(0) == 1);
+    REQUIRE(p(1) == 7);
 }

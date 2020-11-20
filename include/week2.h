@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Complex {
     private:
@@ -25,6 +26,15 @@ class Complex {
         Complex operator+(Complex c);
         Complex operator*(Complex c);
         double length();
+};
+
+class Polynomial {
+    private:
+        std::vector<double> coefficients;
+    public:
+        Polynomial(std::vector<double> coefficients);
+        template <typename NumericType> double operator() (NumericType x);
+        template <typename NumericType> double evaluate(NumericType x);
 };
 
 #endif

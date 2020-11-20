@@ -77,6 +77,23 @@ Complex Complex::operator*(Complex c) {
     return this->multiply(c);
 }
 
+Polynomial::Polynomial(std::vector<double> coefficients): coefficients(coefficients) {}
+
+template <typename NumericType> double Polynomial::operator() (NumericType x) {
+    static_assert(std::is_arithmetic<NumericType>::value, "NumericType must be numeric");
+    return this->evaluate(x);
+}
+
+template <typename NumericType> double Polynomial::evaluate(NumericType x) {
+    static_assert(std::is_arithmetic<NumericType>::value, "NumericType must be numeric");
+    double result = 0;
+    for (int i=0; i<this->coefficients.size(); i++) {
+        double coefficient = this->coefficients[i];
+        result += coefficient * pow(x, i);
+    }
+    return result;
+}
+
 template Complex Complex::operator+<int>(int);
 template Complex Complex::operator+<float>(float);
 template Complex Complex::operator+<double>(double);
@@ -96,3 +113,11 @@ template Complex Complex::multiply<double>(double);
 template Complex::Complex<int>(int, int);
 template Complex::Complex<float>(float, float);
 template Complex::Complex<double>(double, double);
+
+template double Polynomial::evaluate<int>(int);
+template double Polynomial::evaluate<float>(float);
+template double Polynomial::evaluate<double>(double);
+
+template double Polynomial::operator()<int>(int);
+template double Polynomial::operator()<float>(float);
+template double Polynomial::operator()<double>(double);
