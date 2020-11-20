@@ -77,6 +77,14 @@ Complex Complex::operator*(Complex c) {
     return this->multiply(c);
 }
 
+double Complex::getReal() {
+    return this->real;
+}
+
+double Complex::getImag() {
+    return this->imag;
+}
+
 Polynomial::Polynomial(std::vector<double> coefficients): coefficients(coefficients) {}
 
 template <typename NumericType> double Polynomial::operator() (NumericType x) {

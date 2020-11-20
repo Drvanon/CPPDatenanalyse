@@ -45,6 +45,12 @@ TEST_CASE( "Complex numbers should be represent as a+ib", "[complex]") {
     REQUIRE( Complex(1, 2).toString() == "1.000000+i2.000000" );
 }
 
+TEST_CASE( "Complex numbers should allow components to be accessible", "[complex]" ) {
+    Complex c = Complex(3, 4);
+    REQUIRE( c.getReal() == 3 );
+    REQUIRE( c.getImag() == 4 );
+}
+
 TEST_CASE( "Polynomials should be callable", "[polynomial]" ) {
     Polynomial p = Polynomial({1});
     std::vector<double> coefficients = {1};

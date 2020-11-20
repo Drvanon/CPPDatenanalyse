@@ -26,6 +26,8 @@ class Complex {
         Complex operator+(Complex c);
         Complex operator*(Complex c);
         double length();
+        double getReal();
+        double getImag();
 };
 
 class Polynomial {
