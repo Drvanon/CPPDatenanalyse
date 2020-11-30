@@ -28,3 +28,14 @@ catch_discover_tests(week2tests)
 target_include_directories(week2tests PUBLIC include)
 target_link_libraries(week2tests libweek2)
 target_link_libraries(week2tests Catch2::Catch2)
+
+# Week 3
+add_library(libweek3 src/libweek3.cc)
+target_include_directories(libweek3 PUBLIC include)
+
+add_executable(week3tests src/week3tests.cc)
+catch_discover_tests(week3tests)
+target_include_directories(week3tests PUBLIC include)
+target_link_libraries(week3tests libweek3)
+target_link_libraries(week3tests Catch2::Catch2)
+
