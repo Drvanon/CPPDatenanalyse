@@ -9,4 +9,6 @@ class QuadraticSum {
         template <typename NumericType> double operator() (std::vector<NumericType> x);
 };
 
+std::vector<int> random_squared();
+
 #endif

@@ -2,6 +2,9 @@
 #include "week3.h"
 #include <vector>
 #include <cmath>
+#include <iostream>
+#include <string>
+#include <sstream>
 #include <catch2/catch.hpp>
 
 
@@ -23,3 +26,45 @@ TEST_CASE("Functor that raises to the second power and sums.", "[functor]") {
     }
 }
 
+template<typename T>
+std::string str(T begin, T end)
+{
+    std::stringstream ss;
+    bool first = true;
+    for (; begin != end; begin++)
+    {
+        if (!first)
+            ss << ", ";
+        ss << *begin;
+        first = false;
+    }
+    return ss.str();
+}
+
+TEST_CASE("Random numbers should be sorted and squared") {
+    // Seed random
+    srand(time(NULL));
+
+    SECTION("Output vector should be between 0 and 10000 (that is 100 squared)") {
+        for (int r: random_squared()) {
+            REQUIRE(( 0 <= r && r < 10000 ));
+        }
+    }
+
+    SECTION("Ouput vector should have 25 entries") {
+        REQUIRE(random_squared().size() == 25);
+    }
+
+    SECTION("Show output of vector to manually check for randomness") {
+        std::vector<int> rands[3] = {random_squared(), random_squared(), random_squared()};
+        std::cout << "Does this look random to you?" << std::endl;
+        for (int i=0; i<3; i++)
+            std::cout << str(rands[i].begin(), rands[i].end()) << std::endl;
+    }
+
+    SECTION("Output vector needs to be sorted") {
+        std::vector<int> rand = random_squared();
+        for (int i=0; i<24; i++)
+            REQUIRE(rand[i] <= rand[i + 1]);
+    }
+}
