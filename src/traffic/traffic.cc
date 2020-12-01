@@ -74,8 +74,8 @@ int main () {
         car_pool.behaviour(road_pool);
         car_pool.physics(dT);
 
-        car_pool.display(rend);
         road_pool.display(rend);
+        car_pool.display(rend);
 
         SDL_RenderPresent(rend);
         SDL_Delay(1000 / 60);

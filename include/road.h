@@ -2,6 +2,7 @@
 #define ROAD_H
 
 #include <SDL2/SDL.h>
+#include <Eigen/Dense>
 
 #include "road.h"
 #include "entities.h"
@@ -10,10 +11,8 @@
 
 struct Road {
     int id;
-    float start_x;
-    float start_y;
-    float stop_x;
-    float stop_y;
+    Eigen::Vector2f start;
+    Eigen::Vector2f stop;
 };
 
 class RoadPool: public Pool<Road> {
