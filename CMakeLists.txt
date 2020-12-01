@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 project(CPPDatenanalyse)
 
 find_package(Catch2 REQUIRED)
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 include(CTest)
 include(Catch)
@@ -53,3 +54,4 @@ add_executable(traffic ${TRAFFIC_SOURCES})
 target_link_libraries(traffic SDL2::SDL2)
 target_include_directories(traffic PUBLIC ${SDL2_INCLUDE_DIRS})
 target_include_directories(traffic PUBLIC include)
+target_link_libraries (traffic Eigen3::Eigen)

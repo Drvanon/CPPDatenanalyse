@@ -1,6 +1,7 @@
 #include "pool.h"
 #include "car.h"
 #include "road.h"
+#include "path.h"
 
 template <typename T>
 Pool<T>::Pool(int size): size(size) {
@@ -10,3 +11,4 @@ Pool<T>::Pool(int size): size(size) {
 
 template Pool<Car>::Pool(int size);
 template Pool<Road>::Pool(int size);
+template Pool<PathPiece>::Pool(int size);

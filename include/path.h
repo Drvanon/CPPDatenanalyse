@@ -12,7 +12,7 @@ struct PathPiece {
 class PathPool: public Pool<PathPiece> {
     public:
         PathPool(int size);
-        void new_path_piece(int path_id, int prev_path, int next_path);
-}
+        void new_path_piece(int path_id, int prev_road, int next_road);
+};
 
 #endif

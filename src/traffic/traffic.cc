@@ -8,21 +8,21 @@
 #include "car.h"
 #include "road.h"
 
-CarPool init_carpool() {
-    CarPool car_pool = CarPool(2);
-    car_pool.new_car(1, 1);
-    car_pool.new_car(200, 200);
-    return car_pool;
-}
-
 RoadPool init_roadpool() {
     RoadPool road_pool = RoadPool(3);
 
     road_pool.new_road(30, 30, 30, 200);
     road_pool.new_road(150, 400, 300, 300);
-    road_pool.new_road(10, 10, 250, 300);
+    road_pool.new_road(10, 200, 250, 300);
 
     return road_pool;
+}
+
+CarPool init_carpool(RoadPool road_pool) {
+    CarPool car_pool = CarPool(2);
+    car_pool.new_car_on_road(road_pool.pool[0]);
+    car_pool.new_car_on_road(road_pool.pool[1]);
+    return car_pool;
 }
 
 bool handle_events() {
@@ -39,8 +39,8 @@ bool handle_events() {
 }
 
 int main () {
-    CarPool car_pool = init_carpool();
     RoadPool road_pool = init_roadpool();
+    CarPool car_pool = init_carpool(road_pool);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -71,6 +71,7 @@ int main () {
 
         float dT = (current - lastupdate) / 1000.0;
 
+        car_pool.behaviour(road_pool);
         car_pool.physics(dT);
 
         car_pool.display(rend);

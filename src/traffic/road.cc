@@ -1,9 +1,13 @@
 #include "road.h"
 
-RoadPool::RoadPool(int size): Pool<Road>(size) {}
+RoadPool::RoadPool(int size): Pool<Road>(size) {
+    this->index = 0;
+}
+
 
 void RoadPool::new_road(float start_x, float start_y, float stop_x, float stop_y) {
     Road new_road;
+    new_road.id = this->index;
     new_road.start_x = start_x;
     new_road.start_y = start_y;
     new_road.stop_x = stop_x;
@@ -11,6 +15,10 @@ void RoadPool::new_road(float start_x, float start_y, float stop_x, float stop_y
 
     this->pool[this->index] = new_road;
     this->index++;
+}
+
+Road RoadPool::get_road(int id) {
+    return this->pool[id];
 }
 
 void RoadPool::display(SDL_Renderer* rend) {
