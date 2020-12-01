@@ -39,3 +39,10 @@ target_include_directories(week3tests PUBLIC include)
 target_link_libraries(week3tests libweek3)
 target_link_libraries(week3tests Catch2::Catch2)
 
+# traffic
+find_package(SDL2 REQUIRED)
+
+add_executable(traffic src/traffic/traffic.cc src/traffic/car.cc src/traffic/pool.cc)
+target_link_libraries(traffic SDL2::SDL2)
+target_include_directories(traffic PUBLIC ${SDL2_INCLUDE_DIRS})
+target_include_directories(traffic PUBLIC include)
