@@ -54,8 +54,15 @@ void CarPool::behaviour(RoadPool road_pool) {
 
 void CarPool::physics(float dT) {
     for (int i=0;i<this->size;i++) {
-        this->pool[i].pos += this->pool[i].vel * dT;
-        this->pool[i].vel += this->pool[i].acc * dT;
+        Car* car = &this->pool[i];
+        car->pos += car->vel * dT;
+        car->vel += car->acc * dT;
+
+        // Implement a physical speed limit.
+        if (car->vel.norm() > MAX_VEL) {
+            car->vel.normalize();
+            car->vel *= MAX_VEL;
+        }
     }
 }
 
