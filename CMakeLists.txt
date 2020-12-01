@@ -42,7 +42,14 @@ target_link_libraries(week3tests Catch2::Catch2)
 # traffic
 find_package(SDL2 REQUIRED)
 
-add_executable(traffic src/traffic/traffic.cc src/traffic/car.cc src/traffic/pool.cc)
+set(TRAFFIC_SOURCES
+        src/traffic/traffic.cc
+        src/traffic/car.cc
+        src/traffic/road.cc
+        src/traffic/pool.cc
+        src/traffic/path.cc
+)
+add_executable(traffic ${TRAFFIC_SOURCES})
 target_link_libraries(traffic SDL2::SDL2)
 target_include_directories(traffic PUBLIC ${SDL2_INCLUDE_DIRS})
 target_include_directories(traffic PUBLIC include)

@@ -3,6 +3,8 @@
 
 template <typename T>
 class Pool {
+    protected:
+        int index;
     public:
         int size;
         T* pool;

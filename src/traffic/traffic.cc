@@ -4,24 +4,43 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
-#include "traffic.h"
 #include "pool.h"
 #include "car.h"
+#include "road.h"
 
-void init_pool(Pool<Car>& car_pool) {
-    for (int i=0;i<car_pool.size;i++) {
-        null_car(car_pool.pool[i]);
+CarPool init_carpool() {
+    CarPool car_pool = CarPool(2);
+    car_pool.new_car(1, 1);
+    car_pool.new_car(200, 200);
+    return car_pool;
+}
+
+RoadPool init_roadpool() {
+    RoadPool road_pool = RoadPool(3);
+
+    road_pool.new_road(30, 30, 30, 200);
+    road_pool.new_road(150, 400, 300, 300);
+    road_pool.new_road(10, 10, 250, 300);
+
+    return road_pool;
+}
+
+bool handle_events() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+
+        case SDL_QUIT:
+            return false;
+            break;
+        }
     }
-
-    Car* car1 = &car_pool.pool[0];
-    car1->pos_x = 200;
-    car1->pos_y = 200;
-    car1->vel_x = 20;
+    return true;
 }
 
 int main () {
-    Pool<Car> car_pool = Pool<Car>(2);
-    init_pool(car_pool);
+    CarPool car_pool = init_carpool();
+    RoadPool road_pool = init_roadpool();
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -48,20 +67,14 @@ int main () {
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
         SDL_RenderClear(rend);
 
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-
-            case SDL_QUIT:
-                // handling of close button
-                running = false;
-                break;
-            }
-        }
+        running = handle_events();
 
         float dT = (current - lastupdate) / 1000.0;
-        car_physics(car_pool, dT);
-        display_cars(car_pool, rend);
+
+        car_pool.physics(dT);
+
+        car_pool.display(rend);
+        road_pool.display(rend);
 
         SDL_RenderPresent(rend);
         SDL_Delay(1000 / 60);
