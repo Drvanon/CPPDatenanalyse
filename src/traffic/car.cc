@@ -1,13 +1,15 @@
 #include <SDL2/SDL.h>
 #include "traffic.h"
 #include "car.h"
+#include "pool.h"
+#include "entities.h"
 
-void car_physics(Pool<Car>& car_pool, float time_frac) {
+void car_physics(Pool<Car>& car_pool, float dT) {
     for (int i=0;i<car_pool.size;i++) {
-        car_pool.pool[i].pos_x += car_pool.pool[i].vel_x * time_frac;
-        car_pool.pool[i].pos_y += car_pool.pool[i].vel_y * time_frac;
-        car_pool.pool[i].vel_x += car_pool.pool[i].acc_x * time_frac;
-        car_pool.pool[i].vel_y += car_pool.pool[i].acc_y * time_frac;
+        car_pool.pool[i].pos_x += car_pool.pool[i].vel_x * dT;
+        car_pool.pool[i].pos_y += car_pool.pool[i].vel_y * dT;
+        car_pool.pool[i].vel_x += car_pool.pool[i].acc_x * dT;
+        car_pool.pool[i].vel_y += car_pool.pool[i].acc_y * dT;
     }
 }
 

@@ -1,4 +1,5 @@
-#include "traffic.h"
+#include "pool.h"
+#include "car.h"
 
 template <typename T>
 Pool<T>::Pool(int size): size(size) {

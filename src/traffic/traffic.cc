@@ -5,6 +5,7 @@
 #include <SDL2/SDL_timer.h>
 
 #include "traffic.h"
+#include "pool.h"
 #include "car.h"
 
 void init_pool(Pool<Car>& car_pool) {
