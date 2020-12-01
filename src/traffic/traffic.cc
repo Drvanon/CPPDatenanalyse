@@ -7,21 +7,31 @@
 #include "pool.h"
 #include "car.h"
 #include "road.h"
+#include "path.h"
 
 RoadPool init_roadpool() {
-    RoadPool road_pool = RoadPool(3);
+    RoadPool road_pool = RoadPool(4);
 
-    road_pool.new_road(30, 30, 30, 200);
-    road_pool.new_road(150, 400, 300, 300);
-    road_pool.new_road(10, 200, 250, 300);
+    road_pool.new_road(190, 190, 300, 200);
+    road_pool.new_road(300, 200, 300, 300);
+    road_pool.new_road(300, 300, 250, 400);
+    road_pool.new_road(300, 300, 100, 200);
 
     return road_pool;
 }
 
-CarPool init_carpool(RoadPool road_pool) {
+PathPool init_pathpool() {
+    PathPool path_pool = PathPool(6);
+    path_pool.new_path(std::vector<int> {0, 1, 2});
+    path_pool.new_path(std::vector<int> {0, 1, 3});
+    return path_pool;
+}
+
+
+CarPool init_carpool(RoadPool road_pool, PathPool path_pool) {
     CarPool car_pool = CarPool(2);
-    car_pool.new_car_on_road(road_pool.pool[0]);
-    car_pool.new_car_on_road(road_pool.pool[1]);
+    car_pool.new_car_on_path(0, road_pool, path_pool);
+    car_pool.new_car_on_path(1, road_pool, path_pool);
     return car_pool;
 }
 
@@ -40,7 +50,8 @@ bool handle_events() {
 
 int main () {
     RoadPool road_pool = init_roadpool();
-    CarPool car_pool = init_carpool(road_pool);
+    PathPool path_pool = init_pathpool();
+    CarPool car_pool = init_carpool(road_pool, path_pool);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -71,14 +82,13 @@ int main () {
 
         float dT = (current - lastupdate) / 1000.0;
 
-        car_pool.behaviour(road_pool);
+        car_pool.behaviour(road_pool, path_pool);
         car_pool.physics(dT);
 
         road_pool.display(rend);
         car_pool.display(rend);
 
         SDL_RenderPresent(rend);
-        SDL_Delay(1000 / 60);
 	lastupdate = current;
     }
 
