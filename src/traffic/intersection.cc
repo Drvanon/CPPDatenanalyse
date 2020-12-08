@@ -5,6 +5,7 @@
 
 IntersectionPool::IntersectionPool(int size): Pool(size) {
     this->index = 0;
+    for (int i=0; i<size; i++) for (int j=0; i<8; i++) this->pool[i].road[j] = -1;
 }
 
 int IntersectionPool::new_intersection(float pos_x, float pos_y) {
@@ -50,7 +51,7 @@ void IntersectionPool::display(SDL_Renderer* rend) {
         SDL_Rect rect(intersection.pos(0), intersection.pos(1), 5, 5);
 
         for (int j=0; j<8; j++) {
-            // if (intersection.road[j] == -1) continue;
+            if (intersection.road[j] == -1) continue;
             if ( j % 2 )
                 SDL_SetRenderDrawColor(rend, 0, 255, 255, 255);
             else
@@ -65,14 +66,26 @@ void IntersectionPool::display(SDL_Renderer* rend) {
     }
 }
 
-int IntersectionPool::new_road_between_intersections(
-        int intersection1_id, int intersection2_id,
-        int direction_index_1, int direction_index_2,
-        RoadPool road_pool
-) {
-    Intersection* intersection1 = &this->pool[intersection1_id];
-    Intersection* intersection2 = &this->pool[intersection2_id];
+void IntersectionPool::connect_road_start(int intersection_id, int direction_id, int road_id, RoadPool road_pool) {
+    Intersection* inters = &this->pool[intersection_id];
+    inters->road[direction_id] = road_id;
+    road_pool.set_road_start(road_id, this->get_connection_position(intersection_id, direction_id));
+}
 
-    Road new_road;
-    return new_road.id;
+void IntersectionPool::connect_road_stop(int intersection_id, int direction_id, int road_id, RoadPool road_pool) {
+    Intersection* inters = &this->pool[intersection_id];
+    inters->road[direction_id] = road_id;
+    road_pool.set_road_stop(road_id, this->get_connection_position(intersection_id, direction_id));
+}
+
+int IntersectionPool::new_road_between_intersections(
+    int start_intersection_id, int stop_intersection_id,
+    int start_direction, int stop_direction,
+    RoadPool& road_pool
+) {
+    int new_id = road_pool.new_road();
+    this->connect_road_start(start_intersection_id, start_direction, new_id, road_pool);
+    this->connect_road_stop(stop_intersection_id, stop_direction, new_id, road_pool);
+
+    return new_id;
 }

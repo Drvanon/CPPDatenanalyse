@@ -11,33 +11,33 @@
 #include "intersection.h"
 
 IntersectionPool init_intersectionpool() {
-    IntersectionPool int_pool = IntersectionPool(4);
+    IntersectionPool int_pool = IntersectionPool(5);
 
     int_pool.new_intersection(100, 100);
     int_pool.new_intersection(100, 300);
-    int_pool.new_intersection(400, 300);
-    int_pool.new_intersection(400, 500);
+    int_pool.new_intersection(300, 100);
+    int_pool.new_intersection(300, 300);
+    int_pool.new_intersection(300, 500);
     return int_pool;
 }
 
 RoadPool init_roadpool(IntersectionPool int_pool) {
-    RoadPool road_pool = RoadPool(5);
+    RoadPool road_pool = RoadPool(6);
 
-    road_pool.new_road(190, 190, 300, 200);
-    road_pool.new_road(300, 200, 300, 300);
-    road_pool.new_road(300, 300, 250, 400);
-    road_pool.new_road(300, 300, 100, 200);
-    road_pool.new_road(300, 300, 100, 400);
-
-    //int_pool.new_road_between_intersections(0, 0, 1, 0, )
+    int_pool.new_road_between_intersections(0, 1, BOTTOM_OUT, TOP_IN, road_pool);
+    int_pool.new_road_between_intersections(1, 3, RIGHT_OUT, LEFT_IN, road_pool);
+    int_pool.new_road_between_intersections(3, 2, TOP_OUT, BOTTOM_IN, road_pool);
+    int_pool.new_road_between_intersections(2, 0, LEFT_OUT, RIGHT_IN, road_pool);
+    int_pool.new_road_between_intersections(3, 4, BOTTOM_OUT, TOP_IN, road_pool);
+    int_pool.new_road_between_intersections(4, 3, TOP_OUT, BOTTOM_IN, road_pool);
 
     return road_pool;
 }
 
 PathPool init_pathpool() {
     PathPool path_pool = PathPool(6);
-    path_pool.new_path(std::vector<int> {0, 1, 2});
-    path_pool.new_path(std::vector<int> {0, 1, 3});
+    path_pool.new_path(std::vector<int> {0, 1, 2, 3});
+    path_pool.new_path(std::vector<int> {0, 1, 4, 5});
     return path_pool;
 }
 
@@ -74,7 +74,7 @@ int main () {
     SDL_Window* window = SDL_CreateWindow("GAME",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          400, 500, 0);
+                                          600, 650, 0);
     SDL_Surface* screenSurface = NULL;
     screenSurface = SDL_GetWindowSurface( window );
 

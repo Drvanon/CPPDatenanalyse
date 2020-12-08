@@ -21,8 +21,11 @@ class RoadPool: public Pool<Road> {
     public:
         RoadPool(int size);
         void display(SDL_Renderer* rend);
-        void new_road(float start_x, float start_y, float stop_x, float stop_y);
+        int new_road();
+        int new_road(float start_x, float start_y, float stop_x, float stop_y);
         Road get_road(int id);
+        void set_road_start(int id, Eigen::Vector2f pos);
+        void set_road_stop(int id, Eigen::Vector2f pos);
 };
 
 #endif
