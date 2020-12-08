@@ -9,22 +9,13 @@ int CarPool::new_car(float pos_x, float pos_y) {
     Car new_car;
     new_car.id = this->index;
     new_car.alive = true;
-
-    Eigen::Vector2f pos;
-    Eigen::Vector2f vel;
-    Eigen::Vector2f acc;
-
-    pos << pos_x, pos_y;
-    vel << 0, 0;
-    acc = vel;
-    new_car.pos = pos;
-    new_car.vel = vel;
-    new_car.acc = acc;
+    new_car.pos = Eigen::Vector2f(pos_x, pos_y);
+    new_car.vel = Eigen::Vector2f::Zero();
+    new_car.acc = Eigen::Vector2f::Zero();
     new_car.road = -1;
     new_car.path = -1;
 
     this->pool[this->index] = new_car;
-    this->pool[this->index].road = 1;
     this->index++;
 
     return new_car.id;

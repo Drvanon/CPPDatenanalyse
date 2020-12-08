@@ -8,14 +8,8 @@ RoadPool::RoadPool(int size): Pool<Road>(size) {
 void RoadPool::new_road(float start_x, float start_y, float stop_x, float stop_y) {
     Road new_road;
     new_road.id = this->index;
-
-    Eigen::Vector2f start;
-    start << start_x, start_y;
-    Eigen::Vector2f stop;
-    stop << stop_x, stop_y;
-
-    new_road.start = start;
-    new_road.stop = stop;
+    new_road.start = Eigen::Vector2f(start_x, start_y);
+    new_road.stop = Eigen::Vector2f(stop_x, stop_y);
 
     this->pool[this->index] = new_road;
     this->index++;

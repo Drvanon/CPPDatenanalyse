@@ -8,14 +8,28 @@
 #include "car.h"
 #include "road.h"
 #include "path.h"
+#include "intersection.h"
 
-RoadPool init_roadpool() {
-    RoadPool road_pool = RoadPool(4);
+IntersectionPool init_intersectionpool() {
+    IntersectionPool int_pool = IntersectionPool(4);
+
+    int_pool.new_intersection(100, 100);
+    int_pool.new_intersection(100, 300);
+    int_pool.new_intersection(400, 300);
+    int_pool.new_intersection(400, 500);
+    return int_pool;
+}
+
+RoadPool init_roadpool(IntersectionPool int_pool) {
+    RoadPool road_pool = RoadPool(5);
 
     road_pool.new_road(190, 190, 300, 200);
     road_pool.new_road(300, 200, 300, 300);
     road_pool.new_road(300, 300, 250, 400);
     road_pool.new_road(300, 300, 100, 200);
+    road_pool.new_road(300, 300, 100, 400);
+
+    //int_pool.new_road_between_intersections(0, 0, 1, 0, )
 
     return road_pool;
 }
@@ -49,7 +63,8 @@ bool handle_events() {
 }
 
 int main () {
-    RoadPool road_pool = init_roadpool();
+    IntersectionPool int_pool = init_intersectionpool();
+    RoadPool road_pool = init_roadpool(int_pool);
     PathPool path_pool = init_pathpool();
     CarPool car_pool = init_carpool(road_pool, path_pool);
 
@@ -85,6 +100,7 @@ int main () {
         car_pool.behaviour(road_pool, path_pool);
         car_pool.physics(dT);
 
+        int_pool.display(rend);
         road_pool.display(rend);
         car_pool.display(rend);
 

@@ -42,6 +42,7 @@ target_link_libraries(week3tests Catch2::Catch2)
 
 # traffic
 find_package(SDL2 REQUIRED)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(TRAFFIC_SOURCES
         src/traffic/traffic.cc
@@ -49,6 +50,7 @@ set(TRAFFIC_SOURCES
         src/traffic/road.cc
         src/traffic/pool.cc
         src/traffic/path.cc
+        src/traffic/intersection.cc
 )
 add_executable(traffic ${TRAFFIC_SOURCES})
 target_link_libraries(traffic SDL2::SDL2)
