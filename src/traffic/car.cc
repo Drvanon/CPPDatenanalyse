@@ -1,7 +1,19 @@
 #include "car.h"
 
-float MAX_ACC = 10;
+float MAX_ACC = 20;
 float MAX_VEL = 20;
+
+bool point_in_rectangle(
+    Eigen::Vector2f P,
+    Eigen::Vector2f A, Eigen::Vector2f B,
+    Eigen::Vector2f C, Eigen::Vector2f D
+) {
+    bool rel1 = 0 < A.dot(P) * A.dot(B);
+    bool rel2 =  A.dot(P) * A.dot(B) < A.dot(B) * A.dot(B);
+    bool rel3 = 0 < A.dot(P) * A.dot(D);
+    bool rel4 =  A.dot(P) * A.dot(D) < A.dot(D) * A.dot(D);
+    return rel1 && rel2 && rel3 && rel4;
+}
 
 CarPool::CarPool(int size): Pool(size) {}
 
@@ -39,6 +51,8 @@ int CarPool::new_car_on_path(int path, RoadPool road_pool, PathPool path_pool) {
     return new_car_id;
 }
 
+void a() {}
+
 void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
     for (int i=0;i<this->size;i++) {
         Car* car = &(this->pool[i]);
@@ -47,14 +61,27 @@ void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
 
         Road road = road_pool.get_road(car->road);
 
-        Eigen::Vector2f direction = (road.stop - car->pos).normalized();
-        Eigen::Vector2f acc = direction * MAX_ACC;
+        Eigen::Vector2f direction = road.stop - road.start;
+        Eigen::Vector2f perp_clockwise = Eigen::Vector2f(direction(1), -direction(0));
+        Eigen::Vector2f perp_anticlockwise = -perp_clockwise;
+
+        Eigen::Vector2f goal;
+        if (
+            (car->pos - road.start).dot(road.stop - road.start) > 0
+        ) {
+            goal = road.stop;
+        } else {
+            goal = road.start;
+            a();
+        }
+
+        Eigen::Vector2f acc = (goal - car->pos).normalized() * MAX_ACC;
         car->acc = acc;
 
         // If the stopping point could be reached within a second
         // switch to the next point if available.
         if (
-            (car->pos - road.stop).norm() < MAX_VEL
+            (car->pos - road.stop).norm() < MAX_VEL / 5
         ) {
             if (
                 car->path == -1 ||
