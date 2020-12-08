@@ -10,6 +10,12 @@
 #include "path.h"
 #include "intersection.h"
 
+enum SIM_STATE {
+    RUNNING,
+    PAUSED,
+    STOPPING
+};
+
 IntersectionPool init_intersectionpool() {
     IntersectionPool int_pool = IntersectionPool(5);
 
@@ -54,17 +60,28 @@ CarPool init_carpool(RoadPool road_pool, PathPool path_pool) {
     return car_pool;
 }
 
-bool handle_events() {
+SIM_STATE handle_events(SIM_STATE cur_state) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-
-        case SDL_QUIT:
-            return false;
-            break;
-        }
+            case SDL_QUIT:
+                return STOPPING;
+                break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.scancode) {
+                    case SDLK_KP_SPACE:
+                    case SDL_SCANCODE_SPACE:
+                        if (cur_state == RUNNING) {
+                            return PAUSED;
+                        } else {
+                        }
+                        return RUNNING;
+                        break;
+                }
+                break;
+            }
     }
-    return true;
+    return cur_state;
 }
 
 int main () {
@@ -92,18 +109,18 @@ int main () {
 
     Uint32 lastupdate = SDL_GetTicks();
 
-    bool running = true;
-    while (running) {
+    SIM_STATE state = RUNNING;
+    while (state == RUNNING || state == PAUSED) {
     	Uint32 current = SDL_GetTicks();
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
         SDL_RenderClear(rend);
 
-        running = handle_events();
+        state = handle_events(state);
 
         float dT = (current - lastupdate) / 1000.0;
 
         car_pool.behaviour(road_pool, path_pool);
-        car_pool.physics(dT);
+        if (state == RUNNING) car_pool.physics(dT);
 
         int_pool.display(rend);
         road_pool.display(rend);
