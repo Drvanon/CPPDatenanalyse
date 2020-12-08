@@ -47,8 +47,10 @@ CarPool init_carpool(RoadPool road_pool, PathPool path_pool) {
     car_pool.new_car_on_path(0, road_pool, path_pool);
     car_pool.new_car_on_path(1, road_pool, path_pool);
 
-    car_pool.pool[0].pos += Eigen::Vector2f(2, 2);
-    car_pool.pool[1].pos += Eigen::Vector2f(2, 2);
+    car_pool.pool[0].pos += Eigen::Vector2f(20, 20);
+    car_pool.pool[0].vel += Eigen::Vector2f(20, 20);
+    car_pool.pool[1].pos += Eigen::Vector2f(20, 20);
+    car_pool.pool[1].vel += Eigen::Vector2f(20, 20);
     return car_pool;
 }
 

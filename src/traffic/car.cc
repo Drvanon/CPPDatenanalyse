@@ -61,10 +61,6 @@ void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
 
         Road road = road_pool.get_road(car->road);
 
-        Eigen::Vector2f direction = road.stop - road.start;
-        Eigen::Vector2f perp_clockwise = Eigen::Vector2f(direction(1), -direction(0));
-        Eigen::Vector2f perp_anticlockwise = -perp_clockwise;
-
         Eigen::Vector2f goal;
         if (
             (car->pos - road.start).dot(road.stop - road.start) > 0
@@ -72,10 +68,23 @@ void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
             goal = road.stop;
         } else {
             goal = road.start;
-            a();
         }
 
-        Eigen::Vector2f acc = (goal - car->pos).normalized() * MAX_ACC;
+        Eigen::Vector2f perp_clockwise = Eigen::Vector2f(car->vel(1), -car->vel(0)).normalized();
+        Eigen::Vector2f perp_anticlockwise = -perp_clockwise;
+
+        Eigen::Vector2f acc;
+        if (-0.0001 < perp_anticlockwise.dot(goal - car->pos) && perp_anticlockwise.dot(goal - car->pos) < 0.0001 ) {
+            acc = MAX_ACC * (goal - car->pos).normalized();
+        } else {
+            if (perp_anticlockwise.dot(goal - car->pos) > 0.0001 ) {
+                acc = MAX_ACC * perp_anticlockwise;
+            } else {
+                a();
+                acc = MAX_ACC * perp_clockwise;
+            }
+        }
+
         car->acc = acc;
 
         // If the stopping point could be reached within a second
