@@ -20,38 +20,58 @@ enum SIM_STATE {
 };
 
 IntersectionPool init_intersectionpool() {
-    IntersectionPool int_pool = IntersectionPool(5);
+    IntersectionPool int_pool = IntersectionPool(7);
 
-    int_pool.new_intersection(100, 100);
-    int_pool.new_intersection(100, 300);
+    int_pool.new_intersection(200, 100);
+    int_pool.new_intersection(100, 200);
+    int_pool.new_intersection(300, 200);
+    int_pool.new_intersection(200, 300);
+    int_pool.new_intersection(200, 400);
+    int_pool.new_intersection(200, 200);
     int_pool.new_intersection(300, 100);
-    int_pool.new_intersection(300, 300);
-    int_pool.new_intersection(300, 500);
     return int_pool;
 }
 
-RoadPool init_roadpool(IntersectionPool int_pool) {
-    RoadPool road_pool = RoadPool(6);
+RoadPool init_roadpool(IntersectionPool& int_pool) {
+    RoadPool road_pool = RoadPool(20);
 
-    int_pool.new_road_between_intersections(0, 1, BOTTOM_OUT, TOP_IN, road_pool);
-    int_pool.new_road_between_intersections(1, 3, RIGHT_OUT, LEFT_IN, road_pool);
-    int_pool.new_road_between_intersections(3, 2, TOP_OUT, BOTTOM_IN, road_pool);
-    int_pool.new_road_between_intersections(2, 0, LEFT_OUT, RIGHT_IN, road_pool);
+    int_pool.new_road_between_intersections(0, 5, BOTTOM_OUT, TOP_IN, road_pool);
+    int_pool.new_road_between_intersections(5, 0, TOP_OUT, BOTTOM_IN, road_pool);
+    int_pool.new_road_between_intersections(6, 0, LEFT_OUT, RIGHT_IN, road_pool);
+    int_pool.new_road_between_intersections(0, 6, RIGHT_OUT, LEFT_IN, road_pool);
+
+    int_pool.new_road_between_intersections(1, 5, RIGHT_OUT, LEFT_IN, road_pool);
+    int_pool.new_road_between_intersections(5, 1, LEFT_OUT, RIGHT_IN, road_pool);
+
+    int_pool.new_road_between_intersections(2, 5, LEFT_OUT, RIGHT_IN, road_pool);
+    int_pool.new_road_between_intersections(5, 2, RIGHT_OUT, LEFT_IN, road_pool);
+    int_pool.new_road_between_intersections(2, 6, TOP_OUT, BOTTOM_IN, road_pool);
+    int_pool.new_road_between_intersections(6, 2, BOTTOM_OUT, TOP_IN, road_pool);
+
+    int_pool.new_road_between_intersections(3, 5, TOP_OUT, BOTTOM_IN, road_pool);
+    int_pool.new_road_between_intersections(5, 3, BOTTOM_OUT, TOP_IN, road_pool);
+
     int_pool.new_road_between_intersections(3, 4, BOTTOM_OUT, TOP_IN, road_pool);
     int_pool.new_road_between_intersections(4, 3, TOP_OUT, BOTTOM_IN, road_pool);
 
     return road_pool;
 }
 
-PathPool init_pathpool(IntersectionPool int_pool) {
-    PathPool path_pool = PathPool(6);
-    path_pool.new_path(int_pool.generate_path());
-    path_pool.new_path(int_pool.generate_path());
+PathPool init_pathpool(IntersectionPool& int_pool) {
+    PathPool path_pool = PathPool(40);
+    for (int i=0; i<10; i++) {
+        std::vector<int> new_path = int_pool.generate_path();
+        for (int road: new_path) {
+            std::cout << road << ", ";
+        }
+        std::cout << std::endl;
+        path_pool.new_path(new_path);
+    }
     return path_pool;
 }
 
 
-CarPool init_carpool(RoadPool road_pool, PathPool path_pool) {
+CarPool init_carpool(RoadPool& road_pool, PathPool& path_pool) {
     CarPool car_pool = CarPool(2);
     car_pool.new_car_on_path(0, road_pool, path_pool);
     car_pool.new_car_on_path(1, road_pool, path_pool);

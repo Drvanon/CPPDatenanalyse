@@ -16,8 +16,6 @@ struct Road {
 };
 
 class RoadPool: public Pool<Road> {
-    private:
-        int index;
     public:
         RoadPool(int size);
         void display(SDL_Renderer* rend);

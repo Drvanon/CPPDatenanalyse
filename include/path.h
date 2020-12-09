@@ -13,13 +13,13 @@ struct PathPiece {
 class PathPool: public Pool<PathPiece> {
     private:
         int path_index;
-        int path_piece_index;
     public:
         PathPool(int size);
         void new_path(std::vector<int> roads);
         void new_path_piece(int path_id, int prev_road, int next_road);
         int get_next_path_piece(int path, int current_road);
         int get_first_road(int path);
+        std::vector<int> get_path(int id);
 };
 
 #endif

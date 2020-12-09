@@ -22,9 +22,9 @@ class CarPool: public Pool<Car> {
         int new_car(float pos_x, float pos_y);
         void set_car_road(int car_id, int road_id);
         int new_car_on_road(Road road);
-        int new_car_on_path(int path, RoadPool road_pool, PathPool path_pool);
+        int new_car_on_path(int path, RoadPool& road_pool, PathPool& path_pool);
         Car get_car(int car_id);
-        void behaviour(RoadPool road_pool, PathPool path_pool);
+        void behaviour(RoadPool& road_pool, PathPool& path_pool);
         void physics(float dT);
         void display(SDL_Renderer* renderer);
         CarPool(int size);

@@ -1,6 +1,8 @@
 #include "car.h"
 
-float MAX_ACC = 20;
+#include <iostream>
+
+float MAX_ACC = 40;
 float MAX_VEL = 20;
 
 bool point_in_rectangle(
@@ -43,23 +45,21 @@ int CarPool::new_car_on_road(Road road) {
     return new_car_id;
 }
 
-int CarPool::new_car_on_path(int path, RoadPool road_pool, PathPool path_pool) {
+int CarPool::new_car_on_path(int path, RoadPool& road_pool, PathPool& path_pool) {
     int road_id = path_pool.get_first_road(path);
-    Road road = road_pool.get_road(road_id);
+    Road road = road_pool[road_id];
     int new_car_id = this->new_car_on_road(road);
     (*this)[new_car_id].path = path;
     return new_car_id;
 }
 
-void a() {}
-
-void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
+void CarPool::behaviour(RoadPool& road_pool, PathPool& path_pool) {
     for (int i=0;i<this->size;i++) {
         Car* car = &((*this)[i]);
         if (car->road == -1)
             continue;
 
-        Road road = road_pool.get_road(car->road);
+        Road road = road_pool[car->road];
 
         Eigen::Vector2f goal;
         if (
@@ -80,7 +80,6 @@ void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
             if (perp_anticlockwise.dot(goal - car->pos) > 0.0001 ) {
                 acc = MAX_ACC * perp_anticlockwise;
             } else {
-                a();
                 acc = MAX_ACC * perp_clockwise;
             }
         }
@@ -98,7 +97,9 @@ void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
             ) {
                 car->alive = false;
             } else {
+                std::cout << "Car " << car->id << " was on road " << car->road;
                 car->road = path_pool.get_next_path_piece(car->path, car->road);
+                std::cout << " and now is on road " << car->road << std::endl;
             }
         }
     }
@@ -122,7 +123,7 @@ void CarPool::physics(float dT) {
 void CarPool::display(SDL_Renderer* rend) {
     SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);
 
-    for (int i=0;i<this->size;i++) {
+    for (int i=0;i<this->index;i++) {
         Car car = (*this)[i];
         if (!car.alive) continue;
         SDL_Rect rect(car.pos(0), car.pos(1), 5, 10);
