@@ -5,10 +5,11 @@ template <typename T>
 class Pool {
     protected:
         int index;
+        T* pool;
     public:
         int size;
-        T* pool;
         Pool<T>(int size);
+        T& operator[](int);
 };
 
 #endif

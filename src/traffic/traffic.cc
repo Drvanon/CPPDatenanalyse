@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include <stdlib.h>
+#include <time.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
@@ -40,10 +43,10 @@ RoadPool init_roadpool(IntersectionPool int_pool) {
     return road_pool;
 }
 
-PathPool init_pathpool() {
+PathPool init_pathpool(IntersectionPool int_pool) {
     PathPool path_pool = PathPool(6);
-    path_pool.new_path(std::vector<int> {0, 1, 2, 3});
-    path_pool.new_path(std::vector<int> {0, 1, 4, 5});
+    path_pool.new_path(int_pool.generate_path());
+    path_pool.new_path(int_pool.generate_path());
     return path_pool;
 }
 
@@ -53,10 +56,10 @@ CarPool init_carpool(RoadPool road_pool, PathPool path_pool) {
     car_pool.new_car_on_path(0, road_pool, path_pool);
     car_pool.new_car_on_path(1, road_pool, path_pool);
 
-    car_pool.pool[0].pos += Eigen::Vector2f(20, 20);
-    car_pool.pool[0].vel += Eigen::Vector2f(20, 20);
-    car_pool.pool[1].pos += Eigen::Vector2f(20, 20);
-    car_pool.pool[1].vel += Eigen::Vector2f(20, 20);
+    car_pool[0].pos += Eigen::Vector2f(20, 20);
+    car_pool[0].vel += Eigen::Vector2f(20, 20);
+    car_pool[1].pos += Eigen::Vector2f(20, 20);
+    car_pool[1].vel += Eigen::Vector2f(20, 20);
     return car_pool;
 }
 
@@ -85,9 +88,10 @@ SIM_STATE handle_events(SIM_STATE cur_state) {
 }
 
 int main () {
+    srand(time(NULL));
     IntersectionPool int_pool = init_intersectionpool();
     RoadPool road_pool = init_roadpool(int_pool);
-    PathPool path_pool = init_pathpool();
+    PathPool path_pool = init_pathpool(int_pool);
     CarPool car_pool = init_carpool(road_pool, path_pool);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {

@@ -27,19 +27,19 @@ int CarPool::new_car(float pos_x, float pos_y) {
     new_car.road = -1;
     new_car.path = -1;
 
-    this->pool[this->index] = new_car;
+    (*this)[this->index] = new_car;
     this->index++;
 
     return new_car.id;
 }
 
 Car CarPool::get_car(int car_id) {
-    return this->pool[car_id];
+    return (*this)[car_id];
 }
 
 int CarPool::new_car_on_road(Road road) {
     int new_car_id = this->new_car(road.start(0), road.start(1));
-    this->pool[new_car_id].road = road.id;
+    (*this)[new_car_id].road = road.id;
     return new_car_id;
 }
 
@@ -47,7 +47,7 @@ int CarPool::new_car_on_path(int path, RoadPool road_pool, PathPool path_pool) {
     int road_id = path_pool.get_first_road(path);
     Road road = road_pool.get_road(road_id);
     int new_car_id = this->new_car_on_road(road);
-    this->pool[new_car_id].path = path;
+    (*this)[new_car_id].path = path;
     return new_car_id;
 }
 
@@ -55,7 +55,7 @@ void a() {}
 
 void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
     for (int i=0;i<this->size;i++) {
-        Car* car = &(this->pool[i]);
+        Car* car = &((*this)[i]);
         if (car->road == -1)
             continue;
 
@@ -106,7 +106,7 @@ void CarPool::behaviour(RoadPool road_pool, PathPool path_pool) {
 
 void CarPool::physics(float dT) {
     for (int i=0;i<this->size;i++) {
-        Car* car = &this->pool[i];
+        Car* car = &(*this)[i];
         if (!car->alive) continue;
         car->pos += car->vel * dT;
         car->vel += car->acc * dT;
@@ -123,7 +123,7 @@ void CarPool::display(SDL_Renderer* rend) {
     SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);
 
     for (int i=0;i<this->size;i++) {
-        Car car = this->pool[i];
+        Car car = (*this)[i];
         if (!car.alive) continue;
         SDL_Rect rect(car.pos(0), car.pos(1), 5, 10);
         SDL_RenderFillRect(rend, &rect);
