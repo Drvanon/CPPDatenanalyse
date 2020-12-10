@@ -21,6 +21,8 @@ struct Car {
 class CarPool: public Pool<Car> {
     private:
         std::vector<std::vector<int>> paths;
+        bool car_at_end_of_path(Car car);
+        bool car_close_to_end_of_road(Car car, Road road);
     public:
         int new_car(float pos_x, float pos_y);
         void new_path(std::vector<int> path);

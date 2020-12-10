@@ -5,18 +5,6 @@
 float MAX_ACC = 40;
 float MAX_VEL = 20;
 
-bool point_in_rectangle(
-    Eigen::Vector2f P,
-    Eigen::Vector2f A, Eigen::Vector2f B,
-    Eigen::Vector2f C, Eigen::Vector2f D
-) {
-    bool rel1 = 0 < A.dot(P) * A.dot(B);
-    bool rel2 =  A.dot(P) * A.dot(B) < A.dot(B) * A.dot(B);
-    bool rel3 = 0 < A.dot(P) * A.dot(D);
-    bool rel4 =  A.dot(P) * A.dot(D) < A.dot(D) * A.dot(D);
-    return rel1 && rel2 && rel3 && rel4;
-}
-
 CarPool::CarPool(int size): Pool(size) {}
 
 int CarPool::new_car(float pos_x, float pos_y) {
@@ -59,48 +47,62 @@ int CarPool::new_car_on_path(int path, RoadPool& road_pool) {
     return new_car_id;
 }
 
+Eigen::Vector2f find_goal(Eigen::Vector2f car_pos, Road road) {
+    if (
+        (car_pos - road.start).dot(road.stop - road.start) > 0
+    ) {
+        return road.stop;
+    } else {
+        return road.start;
+    }
+}
+
+Eigen::Vector2f get_perpendicular_clockwise(Eigen::Vector2f vec) {
+    return Eigen::Vector2f(vec(1), -vec(0)).normalized();
+}
+
+Eigen::Vector2f steer_towards(Car car, Eigen::Vector2f goal) {
+    Eigen::Vector2f perp_clockwise = get_perpendicular_clockwise(car.vel);
+    Eigen::Vector2f perp_anticlockwise = -perp_clockwise;
+    Eigen::Vector2f acc;
+
+    if (-0.0001 < perp_anticlockwise.dot(goal - car.pos) && perp_anticlockwise.dot(goal - car.pos) < 0.0001 ) {
+        acc = MAX_ACC * (goal - car.pos).normalized();
+    } else {
+        if (perp_anticlockwise.dot(goal - car.pos) > 0.0001 ) {
+            acc = MAX_ACC * perp_anticlockwise;
+        } else {
+            acc = MAX_ACC * perp_clockwise;
+        }
+    }
+
+    return acc;
+}
+
+bool CarPool::car_close_to_end_of_road(Car car, Road road) {
+    return (car.pos - road.stop).norm() < car.vel.norm() / 5;
+}
+
+bool CarPool::car_at_end_of_path(Car car) {
+    return (
+        car.path == -1 ||
+        this->paths[car.path].size() <= car.path_step
+    );
+}
+
 void CarPool::behaviour(RoadPool& road_pool) {
     for (int i=0;i<this->size;i++) {
         Car* car = &((*this)[i]);
-        if (car->road == -1)
-            continue;
+        if (car->road == -1 || not car->alive) continue;
 
         Road road = road_pool[car->road];
-
-        Eigen::Vector2f goal;
-        if (
-            (car->pos - road.start).dot(road.stop - road.start) > 0
-        ) {
-            goal = road.stop;
-        } else {
-            goal = road.start;
-        }
-
-        Eigen::Vector2f perp_clockwise = Eigen::Vector2f(car->vel(1), -car->vel(0)).normalized();
-        Eigen::Vector2f perp_anticlockwise = -perp_clockwise;
-
-        Eigen::Vector2f acc;
-        if (-0.0001 < perp_anticlockwise.dot(goal - car->pos) && perp_anticlockwise.dot(goal - car->pos) < 0.0001 ) {
-            acc = MAX_ACC * (goal - car->pos).normalized();
-        } else {
-            if (perp_anticlockwise.dot(goal - car->pos) > 0.0001 ) {
-                acc = MAX_ACC * perp_anticlockwise;
-            } else {
-                acc = MAX_ACC * perp_clockwise;
-            }
-        }
-
-        car->acc = acc;
+        Eigen::Vector2f goal = find_goal(car->pos, road);
+        car->acc = steer_towards(*car, goal);
 
         // If the stopping point could be reached within a second
         // switch to the next point if available.
-        if (
-            (car->pos - road.stop).norm() < MAX_VEL / 5
-        ) {
-            if (
-                car->path == -1 ||
-                this->paths[car->path].size() <= car->path_step
-            ) {
+        if (car_close_to_end_of_road(*car, road)) {
+            if (car_at_end_of_path(*car)) {
                 car->alive = false;
             } else {
                 std::cout << "Car " << car->id << " was on road " << car->road;
