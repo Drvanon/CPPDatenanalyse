@@ -96,6 +96,8 @@ SIM_STATE handle_events(SIM_STATE cur_state) {
     return cur_state;
 }
 
+
+
 int main () {
     srand(time(NULL));
     IntersectionPool int_pool = init_intersectionpool();
@@ -105,41 +107,35 @@ int main () {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
     }
-    SDL_Window* window = SDL_CreateWindow("GAME",
-                                          SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED,
-                                          600, 650, 0);
-    SDL_Surface* screenSurface = NULL;
-    screenSurface = SDL_GetWindowSurface( window );
 
-    SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-
+    SDL_Window* window = SDL_CreateWindow(
+        "Traffic Simulation",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        600, 650, 0
+    );
     SDL_UpdateWindowSurface(window);
-
-    Uint32 render_flags = SDL_RENDERER_ACCELERATED;
-    SDL_Renderer* rend = SDL_CreateRenderer(window, -1, render_flags);
+    SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     Uint32 lastupdate = SDL_GetTicks();
-
     SIM_STATE state = RUNNING;
     while (state == RUNNING || state == PAUSED) {
-    	Uint32 current = SDL_GetTicks();
-        SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
-        SDL_RenderClear(rend);
-
         state = handle_events(state);
-
+    	Uint32 current = SDL_GetTicks();
         float dT = (current - lastupdate) / 1000.0;
+	lastupdate = current;
 
         car_pool.behaviour(road_pool);
         if (state == RUNNING) car_pool.physics(dT);
+
+        SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
+        SDL_RenderClear(rend);
 
         int_pool.display(rend);
         road_pool.display(rend);
         car_pool.display(rend);
 
         SDL_RenderPresent(rend);
-	lastupdate = current;
     }
 
     return 0;
