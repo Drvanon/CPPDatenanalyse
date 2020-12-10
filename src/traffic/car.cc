@@ -28,11 +28,16 @@ int CarPool::new_car(float pos_x, float pos_y) {
     new_car.acc = Eigen::Vector2f::Zero();
     new_car.road = -1;
     new_car.path = -1;
+    new_car.path_step = -1;
 
     (*this)[this->index] = new_car;
     this->index++;
 
     return new_car.id;
+}
+
+void CarPool::new_path(std::vector<int> path) {
+    this->paths.push_back(path);
 }
 
 Car CarPool::get_car(int car_id) {
@@ -45,15 +50,16 @@ int CarPool::new_car_on_road(Road road) {
     return new_car_id;
 }
 
-int CarPool::new_car_on_path(int path, RoadPool& road_pool, PathPool& path_pool) {
-    int road_id = path_pool.get_first_road(path);
+int CarPool::new_car_on_path(int path, RoadPool& road_pool) {
+    int road_id = this->paths[path][0];
     Road road = road_pool[road_id];
     int new_car_id = this->new_car_on_road(road);
     (*this)[new_car_id].path = path;
+    (*this)[new_car_id].path_step = 0;
     return new_car_id;
 }
 
-void CarPool::behaviour(RoadPool& road_pool, PathPool& path_pool) {
+void CarPool::behaviour(RoadPool& road_pool) {
     for (int i=0;i<this->size;i++) {
         Car* car = &((*this)[i]);
         if (car->road == -1)
@@ -93,12 +99,13 @@ void CarPool::behaviour(RoadPool& road_pool, PathPool& path_pool) {
         ) {
             if (
                 car->path == -1 ||
-                path_pool.get_next_path_piece(car->path, car->road) == -1
+                this->paths[car->path].size() <= car->path_step
             ) {
                 car->alive = false;
             } else {
                 std::cout << "Car " << car->id << " was on road " << car->road;
-                car->road = path_pool.get_next_path_piece(car->path, car->road);
+                car->path_step++;
+                car->road = this->paths[car->path][car->path_step];
                 std::cout << " and now is on road " << car->road << std::endl;
             }
         }

@@ -109,13 +109,12 @@ int IntersectionPool::new_road_between_intersections(
     return new_id;
 }
 
-std::vector<int> IntersectionPool::generate_path() {
-    int STEPS = 3;
+std::vector<int> IntersectionPool::generate_path(int steps) {
 
     int current_intersection_id = rand() % this->index;
     Intersection cur_intersection = (*this)[current_intersection_id];
     std::vector<int> path = {current_intersection_id};
-    for (int i=0; i<STEPS; i++) {
+    for (int i=0; i<steps; i++) {
         std::vector<int> options;
 
         for (int j=0; j<4; j++) {

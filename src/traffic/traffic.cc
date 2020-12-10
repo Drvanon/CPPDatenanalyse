@@ -10,7 +10,6 @@
 #include "pool.h"
 #include "car.h"
 #include "road.h"
-#include "path.h"
 #include "intersection.h"
 
 enum SIM_STATE {
@@ -57,24 +56,14 @@ RoadPool init_roadpool(IntersectionPool& int_pool) {
     return road_pool;
 }
 
-PathPool init_pathpool(IntersectionPool& int_pool) {
-    PathPool path_pool = PathPool(40);
-    for (int i=0; i<10; i++) {
-        std::vector<int> new_path = int_pool.generate_path();
-        for (int road: new_path) {
-            std::cout << road << ", ";
-        }
-        std::cout << std::endl;
-        path_pool.new_path(new_path);
-    }
-    return path_pool;
-}
-
-
-CarPool init_carpool(RoadPool& road_pool, PathPool& path_pool) {
+CarPool init_carpool(RoadPool& road_pool, IntersectionPool& int_pool) {
     CarPool car_pool = CarPool(2);
-    car_pool.new_car_on_path(0, road_pool, path_pool);
-    car_pool.new_car_on_path(1, road_pool, path_pool);
+    for (int i=0; i<10; i++) {
+        car_pool.new_path(int_pool.generate_path(4));
+    }
+
+    car_pool.new_car_on_path(0, road_pool);
+    car_pool.new_car_on_path(1, road_pool);
 
     car_pool[0].pos += Eigen::Vector2f(20, 20);
     car_pool[0].vel += Eigen::Vector2f(20, 20);
@@ -111,8 +100,7 @@ int main () {
     srand(time(NULL));
     IntersectionPool int_pool = init_intersectionpool();
     RoadPool road_pool = init_roadpool(int_pool);
-    PathPool path_pool = init_pathpool(int_pool);
-    CarPool car_pool = init_carpool(road_pool, path_pool);
+    CarPool car_pool = init_carpool(road_pool, int_pool);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -143,7 +131,7 @@ int main () {
 
         float dT = (current - lastupdate) / 1000.0;
 
-        car_pool.behaviour(road_pool, path_pool);
+        car_pool.behaviour(road_pool);
         if (state == RUNNING) car_pool.physics(dT);
 
         int_pool.display(rend);

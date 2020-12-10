@@ -1,7 +1,6 @@
 #include "pool.h"
 #include "car.h"
 #include "road.h"
-#include "path.h"
 #include "intersection.h"
 
 #include <stdexcept>
@@ -21,10 +20,8 @@ T& Pool<T>::operator[](int index) {
 
 template Pool<Car>::Pool(int size);
 template Pool<Road>::Pool(int size);
-template Pool<PathPiece>::Pool(int size);
 template Pool<Intersection>::Pool(int size);
 
 template Car& Pool<Car>::operator[](int index);
 template Road& Pool<Road>::operator[](int index);
-template PathPiece& Pool<PathPiece>::operator[](int index);
 template Intersection& Pool<Intersection>::operator[](int index);

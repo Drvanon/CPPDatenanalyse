@@ -31,7 +31,7 @@ class IntersectionPool: public Pool<Intersection> {
         int new_intersection(float pos_x, float pos_y);
         void connect_road_start(int intersection_id, int direction_id, int road_id, RoadPool& road_pool);
         void connect_road_stop(int intersection_id, int direction_id, int road_id, RoadPool& road_pool);
-        std::vector<int> generate_path();
+        std::vector<int> generate_path(int steps);
         int new_road_between_intersections(
             int start_intersection_id, int stop_intersection_id,
             int start_direction, int stop_direction,

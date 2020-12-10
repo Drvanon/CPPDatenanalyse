@@ -49,7 +49,6 @@ set(TRAFFIC_SOURCES
         src/traffic/car.cc
         src/traffic/road.cc
         src/traffic/pool.cc
-        src/traffic/path.cc
         src/traffic/intersection.cc
 )
 add_executable(traffic ${TRAFFIC_SOURCES})
