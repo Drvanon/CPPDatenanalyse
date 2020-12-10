@@ -66,7 +66,10 @@ Eigen::Vector2f steer_towards(Car car, Eigen::Vector2f goal) {
     Eigen::Vector2f perp_anticlockwise = -perp_clockwise;
     Eigen::Vector2f acc;
 
-    if (-0.0001 < perp_anticlockwise.dot(goal - car.pos) && perp_anticlockwise.dot(goal - car.pos) < 0.0001 ) {
+    if (
+        -0.0001 < perp_anticlockwise.dot((goal - car.pos).normalized()) &&
+        perp_anticlockwise.dot((goal - car.pos).normalized()) < 0.0001
+    ) {
         acc = MAX_ACC * (goal - car.pos).normalized();
     } else {
         if (perp_anticlockwise.dot(goal - car.pos) > 0.0001 ) {
