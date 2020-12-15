@@ -41,7 +41,13 @@ target_link_libraries(week3tests libweek3)
 target_link_libraries(week3tests Catch2::Catch2)
 
 # traffic
-find_package(SDL2 REQUIRED)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_packages/")
+
+INCLUDE(FindPkgConfig)
+PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+PKG_SEARCH_MODULE(SDL2TTF REQUIRED SDL2_ttf>=2.0.0)
+
 set(CMAKE_BUILD_TYPE Debug)
 
 set(TRAFFIC_SOURCES
@@ -52,7 +58,9 @@ set(TRAFFIC_SOURCES
         src/traffic/intersection.cc
 )
 add_executable(traffic ${TRAFFIC_SOURCES})
-target_link_libraries(traffic SDL2::SDL2)
-target_include_directories(traffic PUBLIC ${SDL2_INCLUDE_DIRS})
+target_link_libraries(traffic PRIVATE
+    Eigen3::Eigen ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} ${SDL2TTF_LIBRARIES})
+target_include_directories(traffic PRIVATE
+    ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIRS})
 target_include_directories(traffic PUBLIC include)
-target_link_libraries (traffic Eigen3::Eigen)
+
