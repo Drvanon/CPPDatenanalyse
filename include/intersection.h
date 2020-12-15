@@ -2,6 +2,7 @@
 #define INTERSECTION_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <Eigen/Dense>
 #include <vector>
 #include "road.h"
@@ -37,7 +38,7 @@ class IntersectionPool: public Pool<Intersection> {
             int start_direction, int stop_direction,
             RoadPool& road_pool
         );
-        void display(SDL_Renderer* renderer);
+        void display(SDL_Renderer* renderer, TTF_Font* font);
 };
 
 #endif

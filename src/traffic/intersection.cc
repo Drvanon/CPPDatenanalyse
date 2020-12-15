@@ -2,6 +2,8 @@
 #include <cmath>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
+#include <SDL2/SDL_ttf.h>
 #include "road.h"
 
 
@@ -58,10 +60,29 @@ Eigen::Vector2f IntersectionPool::get_connection_position(int intersection_id, i
     return res;
 }
 
-void IntersectionPool::display(SDL_Renderer* rend) {
+void IntersectionPool::display(SDL_Renderer* rend, TTF_Font* font) {
+    SDL_Color White = {255, 255, 255};
+
     for (int i=0; i<this->index; i++) {
         SDL_SetRenderDrawColor(rend, 0, 255, 0, 255);
         Intersection intersection = (*this)[i];
+
+        // Display id
+        std::string id_string = std::to_string(intersection.id);
+        SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, id_string.c_str(), White);
+        SDL_Rect Message_rect;
+
+        Message_rect.w = 10;
+        Message_rect.h = 20;
+        Message_rect.x = intersection.pos(0) - Message_rect.w / 2;
+        Message_rect.y = intersection.pos(1) - Message_rect.h / 2;
+
+        SDL_Texture* Message = SDL_CreateTextureFromSurface(rend, surfaceMessage);
+        SDL_RenderCopy(rend, Message, NULL, &Message_rect);
+
+        SDL_FreeSurface(surfaceMessage);
+        SDL_DestroyTexture(Message);
+
         SDL_Rect rect(intersection.pos(0), intersection.pos(1), 5, 5);
 
         for (int j=0; j<8; j++) {

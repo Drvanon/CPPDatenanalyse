@@ -57,19 +57,22 @@ RoadPool init_roadpool(IntersectionPool& int_pool) {
 }
 
 CarPool init_carpool(RoadPool& road_pool, IntersectionPool& int_pool) {
-    CarPool car_pool = CarPool(2);
+    CarPool car_pool = CarPool(200);
     for (int i=0; i<10; i++) {
         car_pool.new_path(int_pool.generate_path(4));
     }
 
-    car_pool.new_car_on_path(0, road_pool);
-    car_pool.new_car_on_path(1, road_pool);
-
-    car_pool[0].pos += Eigen::Vector2f(20, 20);
-    car_pool[0].vel += Eigen::Vector2f(20, 20);
-    car_pool[1].pos += Eigen::Vector2f(20, 20);
-    car_pool[1].vel += Eigen::Vector2f(20, 20);
     return car_pool;
+}
+
+Uint32 car_on_random_path(Uint32 last_car_creation, CarPool& car_pool, RoadPool& road_pool) {
+    if (SDL_GetTicks() - last_car_creation > 5000) {
+        int path_index = rand() % car_pool.paths.size();
+        std::cout << "Creating on path " << path_index << std::endl;
+        car_pool.new_car_on_path(path_index, road_pool);
+        return SDL_GetTicks();
+    }
+    return last_car_creation;
 }
 
 SIM_STATE handle_events(SIM_STATE cur_state) {
@@ -96,8 +99,6 @@ SIM_STATE handle_events(SIM_STATE cur_state) {
     return cur_state;
 }
 
-
-
 int main () {
     srand(time(NULL));
     IntersectionPool int_pool = init_intersectionpool();
@@ -106,6 +107,12 @@ int main () {
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
+    }
+    TTF_Init();
+    TTF_Font* font = TTF_OpenFont("assets/coolvetica rg.ttf", 24);
+    if (font == NULL) {
+        std::cout << "Font not found: " << TTF_GetError() << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     SDL_Window* window = SDL_CreateWindow(
@@ -118,6 +125,7 @@ int main () {
     SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     Uint32 lastupdate = SDL_GetTicks();
+    Uint32 last_car_creation = SDL_GetTicks();
     SIM_STATE state = RUNNING;
     while (state == RUNNING || state == PAUSED) {
         state = handle_events(state);
@@ -125,13 +133,16 @@ int main () {
         float dT = (current - lastupdate) / 1000.0;
 	lastupdate = current;
 
-        car_pool.behaviour(road_pool);
-        if (state == RUNNING) car_pool.physics(dT);
+        if (state == RUNNING) {
+            last_car_creation = car_on_random_path(last_car_creation, car_pool, road_pool);
+            car_pool.physics(dT);
+            car_pool.behaviour(road_pool);
+        }
 
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
         SDL_RenderClear(rend);
 
-        int_pool.display(rend);
+        int_pool.display(rend, font);
         road_pool.display(rend);
         car_pool.display(rend);
 

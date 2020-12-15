@@ -49,7 +49,8 @@ int CarPool::new_car_on_path(int path, RoadPool& road_pool) {
 
 Eigen::Vector2f find_goal(Eigen::Vector2f car_pos, Road road) {
     if (
-        (car_pos - road.start).dot(road.stop - road.start) > 0
+        (car_pos - road.start).dot(road.stop - road.start) > 0 ||
+        (car_pos - road.start).norm() < MAX_VEL / 10
     ) {
         return road.stop;
     } else {
@@ -82,6 +83,13 @@ Eigen::Vector2f steer_towards(Car car, Eigen::Vector2f goal) {
     return acc;
 }
 
+Eigen::Vector2f accelerate_towards(Car car, Eigen::Vector2f goal) {
+    if (car.vel.norm() < 0.1 * MAX_VEL) {
+        return (goal - car.pos).normalized() * MAX_ACC;
+    }
+    return Eigen::Vector2f::Zero();
+}
+
 bool CarPool::car_close_to_end_of_road(Car car, Road road) {
     return (car.pos - road.stop).norm() < car.vel.norm() / 5;
 }
@@ -94,13 +102,14 @@ bool CarPool::car_at_end_of_path(Car car) {
 }
 
 void CarPool::behaviour(RoadPool& road_pool) {
-    for (int i=0;i<this->size;i++) {
+    for (int i=0;i<this->index;i++) {
         Car* car = &((*this)[i]);
         if (car->road == -1 || not car->alive) continue;
 
         Road road = road_pool[car->road];
         Eigen::Vector2f goal = find_goal(car->pos, road);
         car->acc = steer_towards(*car, goal);
+        car->acc += accelerate_towards(*car, goal);
 
         // If the stopping point could be reached within a second
         // switch to the next point if available.
@@ -118,7 +127,7 @@ void CarPool::behaviour(RoadPool& road_pool) {
 }
 
 void CarPool::physics(float dT) {
-    for (int i=0;i<this->size;i++) {
+    for (int i=0;i<this->index;i++) {
         Car* car = &(*this)[i];
         if (!car->alive) continue;
         car->pos += car->vel * dT;
