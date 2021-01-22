@@ -7,6 +7,11 @@
 #include "pool.h"
 #include "road.h"
 
+float MAX_ACC = 40;
+float MAX_VEL = 20;
+int CAR_WIDTH = 5;
+int CAR_LENGTH = 10;
+
 struct Car {
     int id;
     Eigen::Vector2f pos;
@@ -20,19 +25,13 @@ struct Car {
 
 class CarPool: public Pool<Car> {
     private:
-        bool car_at_end_of_path(Car car);
-        bool car_close_to_end_of_road(Car car, Road road);
         float distance_to_car_in_front(Car& car);
         Eigen::Vector2f accelerate_car_towards(Car car, Eigen::Vector2f goal);
     public:
-        std::vector<std::vector<int>> paths;
-        int new_car(float pos_x, float pos_y);
-        int new_car_on_road(Road road);
-        int new_car_on_path(int path, RoadPool& road_pool);
-        void new_path(std::vector<int> path);
+        int new_car(Eigen::Vector2f pos);
         void set_car_road(int car_id, int road_id);
         Car get_car(int car_id);
-        void behaviour(RoadPool& road_pool);
+        void behaviour(Road road);
         void physics(float dT);
         void display(SDL_Renderer* renderer);
         CarPool(int size);

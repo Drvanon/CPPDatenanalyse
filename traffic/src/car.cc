@@ -3,16 +3,13 @@
 #include <cmath>
 #include <iostream>
 
-float MAX_ACC = 40;
-float MAX_VEL = 20;
-
 CarPool::CarPool(int size): Pool(size) {}
 
-int CarPool::new_car(float pos_x, float pos_y) {
+int CarPool::new_car(Eigen::Vector2f pos) {
     Car new_car;
     new_car.id = this->index;
     new_car.alive = true;
-    new_car.pos = Eigen::Vector2f(pos_x, pos_y);
+    new_car.pos = pos;
     new_car.vel = Eigen::Vector2f::Zero();
     new_car.acc = Eigen::Vector2f::Zero();
     new_car.road = -1;
@@ -25,27 +22,8 @@ int CarPool::new_car(float pos_x, float pos_y) {
     return new_car.id;
 }
 
-void CarPool::new_path(std::vector<int> path) {
-    this->paths.push_back(path);
-}
-
 Car CarPool::get_car(int car_id) {
     return (*this)[car_id];
-}
-
-int CarPool::new_car_on_road(Road road) {
-    int new_car_id = this->new_car(road.start(0), road.start(1));
-    (*this)[new_car_id].road = road.id;
-    return new_car_id;
-}
-
-int CarPool::new_car_on_path(int path, RoadPool& road_pool) {
-    int road_id = this->paths[path][0];
-    Road road = road_pool[road_id];
-    int new_car_id = this->new_car_on_road(road);
-    (*this)[new_car_id].path = path;
-    (*this)[new_car_id].path_step = 0;
-    return new_car_id;
 }
 
 float CarPool::distance_to_car_in_front(Car& car) {
@@ -60,17 +38,6 @@ float CarPool::distance_to_car_in_front(Car& car) {
         distance = std::min(distance_i, distance);
     }
     return distance;
-}
-
-Eigen::Vector2f find_goal(Eigen::Vector2f car_pos, Road road) {
-    if (
-        (car_pos - road.start).dot(road.stop - road.start) > 0 ||
-        (car_pos - road.start).norm() < MAX_VEL / 10
-    ) {
-        return road.stop;
-    } else {
-        return road.start;
-    }
 }
 
 Eigen::Vector2f get_perpendicular_clockwise(Eigen::Vector2f vec) {
@@ -116,44 +83,14 @@ Eigen::Vector2f CarPool::accelerate_car_towards(Car car, Eigen::Vector2f goal) {
     return acc;
 }
 
-bool CarPool::car_close_to_end_of_road(Car car, Road road) {
-    return (car.pos - road.stop).norm() < car.vel.norm() / 5;
-}
-
-bool CarPool::car_at_end_of_path(Car car) {
-    bool at_end = (
-        car.path == -1 ||
-        ( this->paths[car.path].size() == car.path_step )
-    );
-
-    return at_end;
-}
-
-void CarPool::behaviour(RoadPool& road_pool) {
+void CarPool::behaviour(Road road) {
     for (int i=0;i<this->index;i++) {
         Car* car = &((*this)[i]);
         if (car->road == -1 || not car->alive) continue;
 
-        Road road = road_pool[car->road];
-        Eigen::Vector2f goal = find_goal(car->pos, road);
+        Eigen::Vector2f goal = Eigen::Vector2f::Zero(); // find_goal(car->pos, road);
         car->acc = accelerate_car_towards(*car, goal);
         car->acc += steer_towards(*car, goal);
-
-        // If the stopping point could be reached within a second
-        // switch to the next point if available.
-        if (car_close_to_end_of_road(*car, road)) {
-            car->path_step++;
-            if (this->car_at_end_of_path(*car)) {
-                car->alive = false;
-            } else {
-                std::cout << "Car " << car->id << " was on road " << car->road;
-                car->road = this->paths[car->path][car->path_step];
-                std::cout << " and now is on road " << car->road
-                          << " step: " << car->path_step
-                          << "/" << this->paths[car->path].size()
-                          << " on path " << car->path << std::endl;
-            }
-        }
     }
 }
 
@@ -178,7 +115,7 @@ void CarPool::display(SDL_Renderer* rend) {
     for (int i=0;i<this->index;i++) {
         Car car = (*this)[i];
         if (!car.alive) continue;
-        SDL_Rect rect(car.pos(0), car.pos(1), 5, 10);
+        SDL_Rect rect(car.pos(0), car.pos(1), CAR_WIDTH, CAR_LENGTH);
         SDL_RenderFillRect(rend, &rect);
     }
 }

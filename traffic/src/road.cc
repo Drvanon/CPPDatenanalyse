@@ -1,49 +1,33 @@
-#include <stdexcept>
-#include "road.h"
+#include "traffic.h"
+#include "car.h"
 
-RoadPool::RoadPool(int size): Pool<Road>(size) {
-    this->index = 0;
+int LANE_WIDTH = CAR_WIDTH * 1.2 + 1;
+int TOP_MARGIN = 25;
+int LANE_MARGIN = 10;
+
+int STRIPE_LENGTH = 8;
+int GAP_LENGTH = 4;
+
+Road::Road(int lanes): lanes(lanes) {
+   this->repeats = (SCREEN_HEIGHT - TOP_MARGIN * 2) / (LANE_MARGIN + lanes * LANE_WIDTH);
+   this->length = this->repeats * SCREEN_WIDTH;
 }
 
-int RoadPool::new_road() {
-    Road new_road;
-    new_road.id = this->index;
+void Road::display(SDL_Renderer* renderer) {
+    for (int i=0; i<this->repeats; i++) {
+        int height = i * (LANE_WIDTH + LANE_MARGIN)  + TOP_MARGIN;
+        SDL_RenderDrawLine(renderer, 0, height, SCREEN_WIDTH, height);
+        SDL_RenderDrawLine(renderer, 0, height + LANE_WIDTH, SCREEN_WIDTH, height);
 
-    this->pool[new_road.id] = new_road;
-    this->index++;
-    return new_road.id;
-}
-
-int RoadPool::new_road(float start_x, float start_y, float stop_x, float stop_y) {
-    Road new_road;
-    new_road.id = this->index;
-
-    new_road.start = Eigen::Vector2f(start_x, start_y);
-    new_road.stop = Eigen::Vector2f(stop_x, stop_y);
-
-    (*this)[this->index] = new_road;
-    this->index++;
-    return new_road.id;
-}
-
-void RoadPool::set_road_start(int id, Eigen::Vector2f pos) {
-    (*this)[id].start = pos;
-}
-
-void RoadPool::set_road_stop(int id, Eigen::Vector2f pos) {
-    (*this)[id].stop = pos;
-}
-
-void RoadPool::display(SDL_Renderer* rend) {
-    SDL_SetRenderDrawColor(rend, 255, 255, 255, 255);
-    for (int i=0;i < this->index; i++) {
-        Road road = (*this)[i];
-        SDL_RenderDrawLine(rend,
-                           road.start(0), road.start(1),
-                           road.stop(0), road.stop(1));
+        for (int j=1; j + 1 < this->lanes; j++ ) {
+            int n_stripes = SCREEN_WIDTH / (STRIPE_LENGTH + GAP_LENGTH);
+            for (int k=0; k < n_stripes; k++) {
+                SDL_RenderDrawLine(renderer,
+                        0, height + j * LANE_WIDTH,
+                        SCREEN_WIDTH, height + j * LANE_WIDTH
+                );
+            }
+        }
     }
-}
 
-Road RoadPool::get_road(int id) {
-    return (*this)[id];
 }

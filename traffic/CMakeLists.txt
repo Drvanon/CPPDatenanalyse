@@ -16,11 +16,10 @@ PKG_SEARCH_MODULE(SDL2TTF REQUIRED SDL2_ttf>=2.0.0)
 set(CMAKE_BUILD_TYPE Debug)
 
 set(TRAFFIC_SOURCES
-        src/traffic.cc
-        src/car.cc
         src/road.cc
+        src/car.cc
         src/pool.cc
-        src/intersection.cc
+        src/traffic.cc
 )
 add_executable(traffic ${TRAFFIC_SOURCES})
 target_link_libraries(traffic PRIVATE
