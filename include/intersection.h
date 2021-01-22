@@ -26,6 +26,8 @@ struct Intersection {
 };
 
 class IntersectionPool: public Pool<Intersection> {
+    private:
+        int find_road_between_intersections(int int1_id, int int2_id);
     public:
         IntersectionPool(int size);
         Eigen::Vector2f get_connection_position(int intersection_id, int direction_id);

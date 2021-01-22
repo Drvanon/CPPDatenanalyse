@@ -22,6 +22,8 @@ class CarPool: public Pool<Car> {
     private:
         bool car_at_end_of_path(Car car);
         bool car_close_to_end_of_road(Car car, Road road);
+        float distance_to_car_in_front(Car& car);
+        Eigen::Vector2f accelerate_car_towards(Car car, Eigen::Vector2f goal);
     public:
         std::vector<std::vector<int>> paths;
         int new_car(float pos_x, float pos_y);

@@ -126,28 +126,47 @@ int IntersectionPool::new_road_between_intersections(
     (*this)[start_intersection_id].intersection[start_direction] = stop_intersection_id;
     (*this)[stop_intersection_id].intersection[stop_direction] = start_intersection_id;
 
-
     return new_id;
 }
 
-std::vector<int> IntersectionPool::generate_path(int steps) {
+int IntersectionPool::find_road_between_intersections(int int1_id, int int2_id) {
+    Intersection int1 = (*this)[int1_id];
+    for (int i=0; i < 4; i++) {
+        if (int1.intersection[i * 2 + 1] == int2_id) return int1.road[i];
+    }
+    throw std::overflow_error("No connection between these two roads");
+}
 
+std::vector<int> IntersectionPool::generate_path(int steps) {
     int current_intersection_id = rand() % this->index;
     Intersection cur_intersection = (*this)[current_intersection_id];
     std::vector<int> path = {current_intersection_id};
+
     for (int i=0; i<steps; i++) {
+        std::cout << cur_intersection.id << ", ";
         std::vector<int> options;
 
         for (int j=0; j<4; j++) {
             int next_intersection = cur_intersection.intersection[j*2 + 1];
-            if (next_intersection != -1)
+            if (next_intersection != -1 && next_intersection != path.back())
                 options.push_back(j*2 + 1);
         }
 
         int choice = options[rand() % options.size()];
-        path.push_back(cur_intersection.road[choice]);
         current_intersection_id = cur_intersection.intersection[choice];
         cur_intersection = (*this)[current_intersection_id];
+        path.push_back(current_intersection_id);
     }
-    return path;
+    std::cout << std::endl;
+
+    std::vector<int> roads;
+    // Doing this in separate loop in order not
+    // to conflict the logic of intersections and paths.
+    std::cout << "Actual: ";
+    for (int i=1; i<steps; i++) {
+        roads.push_back(this->find_road_between_intersections(path[i-1], path[i]));
+        std::cout << path[i-1] << " - " << path[i] << " (" << roads.back() << "), ";
+    }
+    std::cout << std::endl;
+    return roads;
 }

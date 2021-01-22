@@ -44,3 +44,6 @@ void RoadPool::display(SDL_Renderer* rend) {
     }
 }
 
+Road RoadPool::get_road(int id) {
+    return (*this)[id];
+}
