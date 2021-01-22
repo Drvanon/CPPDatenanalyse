@@ -13,6 +13,11 @@
 #include "pool.h"
 #include "road.h"
 
+int CAR_CREATION_PERIOD = 15000;
+
+int SCREEN_WIDTH = 600;
+int SCREEN_HEIGHT = 650;
+
 enum SIM_STATE {
     RUNNING,
     PAUSED,
@@ -60,9 +65,6 @@ SIM_STATE handle_events(SIM_STATE cur_state) {
 int main () {
     srand(time(NULL));
 
-    Road road = Road(3);
-    CarPool car_pool = init_carpool(road);
-
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
     }
@@ -81,6 +83,9 @@ int main () {
     );
     SDL_UpdateWindowSurface(window);
     SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    Road road = Road(3);
+    CarPool car_pool = init_carpool(road);
 
     Uint32 lastupdate = SDL_GetTicks();
     Uint32 last_car_creation = -CAR_CREATION_PERIOD;
@@ -101,6 +106,7 @@ int main () {
         SDL_RenderClear(rend);
 
         car_pool.display(rend);
+        road.display(rend);
 
         SDL_RenderPresent(rend);
     }

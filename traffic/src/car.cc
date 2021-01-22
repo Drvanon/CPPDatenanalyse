@@ -3,6 +3,11 @@
 #include <cmath>
 #include <iostream>
 
+float MAX_ACC = 40;
+float MAX_VEL = 20;
+int CAR_WIDTH = 5;
+int CAR_LENGTH = 10;
+
 CarPool::CarPool(int size): Pool(size) {}
 
 int CarPool::new_car(Eigen::Vector2f pos) {

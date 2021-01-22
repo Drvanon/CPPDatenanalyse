@@ -1,8 +1,4 @@
 #ifndef TRAFFIC_H
 #define TRAFFIC_H
 
-int CAR_CREATION_PERIOD = 15000;
-int SCREEN_WIDTH = 600;
-int SCREEN_HEIGHT = 650;
-
 #endif

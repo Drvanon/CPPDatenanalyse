@@ -7,11 +7,6 @@
 #include "pool.h"
 #include "road.h"
 
-float MAX_ACC = 40;
-float MAX_VEL = 20;
-int CAR_WIDTH = 5;
-int CAR_LENGTH = 10;
-
 struct Car {
     int id;
     Eigen::Vector2f pos;
