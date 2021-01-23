@@ -13,6 +13,8 @@
 #include "pool.h"
 #include "road.h"
 
+typedef Eigen::Vector2f vec2f;
+
 int CAR_CREATION_PERIOD = 15000;
 
 int SCREEN_WIDTH = 600;
@@ -32,7 +34,7 @@ CarPool init_carpool(Road* road) {
 Uint32 create_car(Uint32 last_car_creation, CarPool& car_pool) {
     if (SDL_GetTicks() - last_car_creation > CAR_CREATION_PERIOD) {
         // Create path
-        // car_pool.new_car_on_path(path_index, road_pool);
+        car_pool.new_car(vec2f(0,0));
         return SDL_GetTicks();
     }
     return last_car_creation;
@@ -109,14 +111,14 @@ int main () {
         if (state == RUNNING) {
             last_car_creation = create_car(last_car_creation, car_pool);
             car_pool.physics(dT);
-            car_pool.behaviour();
+            car_pool.behaviour(&road);
         }
 
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
         SDL_RenderClear(rend);
 
         road.display(rend);
-        car_pool.display(rend);
+        car_pool.display(rend, &road);
 
         SDL_RenderPresent(rend);
         SDL_Delay(50);

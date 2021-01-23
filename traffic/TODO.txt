@@ -1,5 +1,6 @@
 + Draw lanes
-- Display cars at correct position
++ Make cars move forward forever
++ Display cars at correct position
 - Make cars teleport at end
 - Let cars have different speeds
 - Make cars break

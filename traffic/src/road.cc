@@ -1,4 +1,5 @@
 #include "road.h"
+#include "math.h"
 #include <iostream>
 
 int LANE_WIDTH = 8 * 1.2 + 1; // ASSUMING 8 to be car width!
@@ -7,6 +8,8 @@ int LANE_MARGIN = 10;
 
 int STRIPE_LENGTH = 8;
 int GAP_LENGTH = 4;
+
+typedef Eigen::Vector2f vec2f;
 
 Road::Road(int lanes, SDL_Renderer* rend, SDL_Texture* texture):
     lanes(lanes), rend(rend), texture(texture)
@@ -30,7 +33,6 @@ void Road::fill_texture() {
 
     for (int i=0; i<this->repeats; i++) {
         int height = i * (lanes * LANE_WIDTH + LANE_MARGIN) + TOP_MARGIN;
-        std::cout << "height: " << height << std::endl;
 
         SDL_SetRenderDrawColor(this->rend, 255, 255, 255, 255);
         SDL_RenderDrawLine(this->rend, 0, height, w, height);
@@ -51,6 +53,17 @@ void Road::fill_texture() {
     if (SDL_SetRenderTarget(this->rend, prev_target) != 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set render target: %s", SDL_GetError());
     }
+}
+
+vec2f Road::get_display_position(vec2f pos) {
+    int w, h;
+    SDL_QueryTexture(this->texture, NULL, NULL, &w, &h);
+    vec2f ret_pos(
+        fmod(pos(0), w),
+        (int)(pos(0) / w) * (this->lanes * LANE_WIDTH + LANE_MARGIN) + TOP_MARGIN + pos(1) + 3
+    );
+
+    return ret_pos;
 }
 
 void Road::display(SDL_Renderer* rend) {

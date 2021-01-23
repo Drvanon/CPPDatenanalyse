@@ -12,9 +12,6 @@ struct Car {
     Eigen::Vector2f pos;
     Eigen::Vector2f vel;
     Eigen::Vector2f acc;
-    int road;
-    int path;
-    int path_step;
     bool alive;
 };
 
@@ -26,9 +23,9 @@ class CarPool: public Pool<Car> {
         int new_car(Eigen::Vector2f pos);
         void set_car_road(int car_id, int road_id);
         Car get_car(int car_id);
-        void behaviour();
+        void behaviour(Road* road);
         void physics(float dT);
-        void display(SDL_Renderer* renderer);
+        void display(SDL_Renderer* renderer, Road* road);
         CarPool(int size);
 };
 
