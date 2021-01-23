@@ -24,12 +24,12 @@ enum SIM_STATE {
     STOPPING
 };
 
-CarPool init_carpool(Road road) {
+CarPool init_carpool(Road* road) {
     CarPool car_pool = CarPool(200);
     return car_pool;
 }
 
-Uint32 create_car(Uint32 last_car_creation, CarPool& car_pool, Road road) {
+Uint32 create_car(Uint32 last_car_creation, CarPool& car_pool) {
     if (SDL_GetTicks() - last_car_creation > CAR_CREATION_PERIOD) {
         // Create path
         // car_pool.new_car_on_path(path_index, road_pool);
@@ -66,12 +66,12 @@ int main () {
     srand(time(NULL));
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        printf("error initializing SDL: %s\n", SDL_GetError());
+         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
     }
     TTF_Init();
     TTF_Font* font = TTF_OpenFont("assets/coolvetica rg.ttf", 24);
     if (font == NULL) {
-        std::cout << "Font not found: " << TTF_GetError() << std::endl;
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Font not found: %s", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
@@ -81,11 +81,21 @@ int main () {
         SDL_WINDOWPOS_CENTERED,
         SCREEN_WIDTH, SCREEN_HEIGHT, 0
     );
-    SDL_UpdateWindowSurface(window);
+    SDL_GetWindowSurface(window);
+    if (SDL_UpdateWindowSurface(window) != 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't update window: %s", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
     SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    Road road = Road(3);
-    CarPool car_pool = init_carpool(road);
+    SDL_Texture* road_texture = SDL_CreateTexture(
+        rend,
+        SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+        SCREEN_WIDTH, SCREEN_HEIGHT
+    );
+
+    Road road = Road(3, rend, road_texture);
+    CarPool car_pool = init_carpool(&road);
 
     Uint32 lastupdate = SDL_GetTicks();
     Uint32 last_car_creation = -CAR_CREATION_PERIOD;
@@ -97,18 +107,19 @@ int main () {
 	lastupdate = current;
 
         if (state == RUNNING) {
-            last_car_creation = create_car(last_car_creation, car_pool, road);
+            last_car_creation = create_car(last_car_creation, car_pool);
             car_pool.physics(dT);
-            car_pool.behaviour(road);
+            car_pool.behaviour();
         }
 
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
         SDL_RenderClear(rend);
 
-        car_pool.display(rend);
         road.display(rend);
+        car_pool.display(rend);
 
         SDL_RenderPresent(rend);
+        SDL_Delay(50);
     }
 
     return 0;

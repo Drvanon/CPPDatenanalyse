@@ -88,7 +88,7 @@ Eigen::Vector2f CarPool::accelerate_car_towards(Car car, Eigen::Vector2f goal) {
     return acc;
 }
 
-void CarPool::behaviour(Road road) {
+void CarPool::behaviour() {
     for (int i=0;i<this->index;i++) {
         Car* car = &((*this)[i]);
         if (car->road == -1 || not car->alive) continue;
