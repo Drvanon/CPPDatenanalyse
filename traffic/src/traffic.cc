@@ -34,7 +34,7 @@ CarPool init_carpool(Road* road) {
 Uint32 create_car(Uint32 last_car_creation, CarPool& car_pool) {
     if (SDL_GetTicks() - last_car_creation > CAR_CREATION_PERIOD) {
         // Create path
-        car_pool.new_car(vec2f(0,0));
+        car_pool.new_car(vec2f(8500, 0));
         return SDL_GetTicks();
     }
     return last_car_creation;

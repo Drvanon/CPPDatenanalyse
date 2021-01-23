@@ -6,7 +6,7 @@
 typedef Eigen::Vector2f vec2f;
 
 float MAX_ACC = 40;
-float MAX_VEL = 20;
+float MAX_VEL = 50;
 int CAR_WIDTH = 5;
 int CAR_LENGTH = 10;
 
@@ -96,6 +96,9 @@ void CarPool::behaviour(Road* road) {
         Car* car = &((*this)[i]);
         if (not car->alive) continue;
 
+        if (car->pos(0) > road->length) {
+            car->pos -= vec2f(road->length, 0);
+        }
         vec2f goal = find_goal(car->pos);
         car->acc = accelerate_car_towards(*car, goal);
         car->acc += steer_towards(*car, goal);
