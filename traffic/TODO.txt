@@ -2,6 +2,7 @@
 + Make cars move forward forever
 + Display cars at correct position
 + Make cars teleport at end
-- Let cars have different speeds
-- Make cars break
++ Let cars have different speeds
++ Make cars break
+- Make cars look over 'edge'
 - Make cars switch lanes

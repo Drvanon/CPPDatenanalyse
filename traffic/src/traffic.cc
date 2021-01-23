@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 
 #include <stdlib.h>
 #include <time.h>
@@ -15,7 +16,7 @@
 
 typedef Eigen::Vector2f vec2f;
 
-int CAR_CREATION_PERIOD = 15000;
+int CAR_CREATION_PERIOD = 5000;
 
 int SCREEN_WIDTH = 600;
 int SCREEN_HEIGHT = 650;
@@ -121,7 +122,6 @@ int main () {
         car_pool.display(rend, &road);
 
         SDL_RenderPresent(rend);
-        SDL_Delay(50);
     }
 
     return 0;

@@ -5,12 +5,20 @@
 
 typedef Eigen::Vector2f vec2f;
 
-float MAX_ACC = 40;
-float MAX_VEL = 50;
+float MEAN_ACC = 40;
+float FWHM_ACC = 10;
+float MEAN_VEL = 50;
+float FWHM_VEL = 10;
+float MEAN_STEER = 10;
+float FWHM_STEER = 5;
 int CAR_WIDTH = 5;
 int CAR_LENGTH = 10;
 
-CarPool::CarPool(int size): Pool(size) {}
+CarPool::CarPool(int size): Pool(size) {
+    this->acc_dist = std::normal_distribution(MEAN_ACC, FWHM_ACC);
+    this->vel_dist = std::normal_distribution(MEAN_VEL, FWHM_VEL);
+    this->steer_dist = std::normal_distribution(MEAN_STEER, FWHM_STEER);
+}
 
 int CarPool::new_car(vec2f pos) {
     Car new_car;
@@ -19,6 +27,16 @@ int CarPool::new_car(vec2f pos) {
     new_car.pos = pos;
     new_car.vel = vec2f::Zero();
     new_car.acc = vec2f::Zero();
+
+    new_car.max_acc = this->acc_dist(this->random_generator);
+    new_car.max_vel = this->vel_dist(this->random_generator);
+    new_car.max_steer = this->steer_dist(this->random_generator);
+
+    std::cout << "New car created." << std::endl
+        << "\tid: " << new_car.id << std::endl
+        << "\tmax acc: " << new_car.max_acc << std::endl
+        << "\tmax vel: " << new_car.max_vel << std::endl
+        << "\tmax steer: " << new_car.max_steer << std::endl;
 
     (*this)[this->index] = new_car;
     this->index++;
@@ -54,31 +72,33 @@ vec2f steer_towards(Car car, vec2f goal) {
     vec2f acc = vec2f::Zero();
 
     if (perp_anticlockwise.dot(goal - car.pos) > 0.0001 ) {
-        acc = MAX_ACC * perp_anticlockwise;
+        acc = car.max_steer * perp_anticlockwise;
     }
     if (perp_clockwise.dot(goal - car.pos) > 0.0001 ) {
-        acc = MAX_ACC * perp_clockwise;
+        acc = car.max_steer * perp_clockwise;
     }
 
     return acc;
 }
 
 float sigmoid(float x) {
-    return 1 / (1 +  exp(-x))-.5;
+    float res = 1 / (1 +  exp(-x))-.5;
+    if (res > 0) res = 0;
+    return res;
 }
 
 vec2f CarPool::accelerate_car_towards(Car car, vec2f goal) {
     float dist_next_car = this->distance_to_car_in_front(car);
 
     vec2f dir;
-    if (car.vel.norm() < MAX_VEL * 0.01) {
+    if (car.vel.norm() < car.max_vel * 0.01) {
         dir = (goal - car.pos).normalized();
     } else {
         dir = car.vel.normalized();
     }
-    vec2f acc = dir * MAX_ACC;
+    vec2f acc = dir * car.max_acc;
 
-    if (dist_next_car < 0.6 * MAX_VEL) {
+    if (dist_next_car < 0.6 * car.max_vel) {
         float scared_factor = sigmoid(dist_next_car - car.vel.norm());
         std::cout << "Scared factor: " << scared_factor << std::endl;
         acc *= scared_factor;
@@ -113,9 +133,9 @@ void CarPool::physics(float dT) {
         car->vel += car->acc * dT;
 
         // Implement a physical speed limit.
-        if (car->vel.norm() > MAX_VEL) {
+        if (car->vel.norm() > car->max_vel) {
             car->vel.normalize();
-            car->vel *= MAX_VEL;
+            car->vel *= car->max_vel;
         }
     }
 }
