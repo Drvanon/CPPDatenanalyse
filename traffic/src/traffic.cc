@@ -67,6 +67,7 @@ SIM_STATE handle_events(SIM_STATE cur_state) {
 
 int main () {
     srand(time(NULL));
+    SDL_Window* window;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
          SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
@@ -78,19 +79,22 @@ int main () {
         exit(EXIT_FAILURE);
     }
 
-    SDL_Window* window = SDL_CreateWindow(
+    window = SDL_CreateWindow(
         "Traffic Simulation",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        SCREEN_WIDTH, SCREEN_HEIGHT, 0
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        SCREEN_WIDTH, SCREEN_HEIGHT,
+        SDL_WINDOW_OPENGL
     );
-    SDL_GetWindowSurface(window);
-    if (SDL_UpdateWindowSurface(window) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't update window: %s", SDL_GetError());
+
+    if (window == NULL) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open window: %s", SDL_GetError());
         exit(EXIT_FAILURE);
     }
-    SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+
+    SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "DEBUG: %s", SDL_GetError());
     SDL_Texture* road_texture = SDL_CreateTexture(
         rend,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,

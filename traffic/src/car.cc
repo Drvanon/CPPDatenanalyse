@@ -100,7 +100,6 @@ vec2f CarPool::accelerate_car_towards(Car car, vec2f goal) {
 
     if (dist_next_car < 0.6 * car.max_vel) {
         float scared_factor = sigmoid(dist_next_car - car.vel.norm());
-        std::cout << "Scared factor: " << scared_factor << std::endl;
         acc *= scared_factor;
     }
 
@@ -147,7 +146,11 @@ void CarPool::display(SDL_Renderer* rend, Road* road) {
         Car car = (*this)[i];
         if (!car.alive) continue;
         vec2f pos = road->get_display_position(car.pos);
-        SDL_Rect rect(pos(0), pos(1), CAR_LENGTH, CAR_WIDTH);
+        SDL_Rect rect;
+        rect.x = pos(0);
+        rect.y = pos(1);
+        rect.w = CAR_LENGTH;
+        rect.h = CAR_WIDTH;
         SDL_RenderFillRect(rend, &rect);
     }
 }

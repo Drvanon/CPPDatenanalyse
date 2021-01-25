@@ -26,9 +26,8 @@ void Road::fill_texture() {
     int w, h;
     SDL_QueryTexture(this->texture, NULL, NULL, &w, &h);
 
-    SDL_Texture* prev_target = SDL_GetRenderTarget(rend);
     if (SDL_SetRenderTarget(this->rend, this->texture) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set render target: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set render target to road texture: %s", SDL_GetError());
     }
 
     for (int i=0; i<this->repeats; i++) {
@@ -50,8 +49,9 @@ void Road::fill_texture() {
         }
     }
 
-    if (SDL_SetRenderTarget(this->rend, prev_target) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set render target: %s", SDL_GetError());
+    if (SDL_SetRenderTarget(this->rend, NULL) != 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't reset render target: %s", SDL_GetError());
+        exit(EXIT_FAILURE);
     }
 }
 
