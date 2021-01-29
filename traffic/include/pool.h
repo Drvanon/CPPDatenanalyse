@@ -8,8 +8,8 @@ class Pool {
         T* pool;
     public:
         int size;
-        Pool<T>(int size);
-        T& operator[](int);
+        __host__ Pool<T>(int size);
+        __device__ T& operator[](int);
 };
 
 #endif

@@ -70,8 +70,7 @@ int main () {
     SDL_Window* window;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
-    }
+         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError()); }
     TTF_Init();
     TTF_Font* font = TTF_OpenFont("assets/coolvetica rg.ttf", 24);
     if (font == NULL) {
@@ -94,7 +93,6 @@ int main () {
 
 
     SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "DEBUG: %s", SDL_GetError());
     SDL_Texture* road_texture = SDL_CreateTexture(
         rend,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
@@ -105,6 +103,8 @@ int main () {
     CarPool car_pool = init_carpool(&road);
 
     Uint32 lastupdate = SDL_GetTicks();
+    // GetTicks gives miliseconds since start of program, so we want
+    // to set the last_car_creation way back so one immediately gets created.
     Uint32 last_car_creation = -CAR_CREATION_PERIOD;
     SIM_STATE state = RUNNING;
     while (state == RUNNING || state == PAUSED) {

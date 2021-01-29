@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_STANDARD 20)
 
-project(Traffic)
+project(Traffic LANGUAGES CXX CUDA)
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
@@ -17,8 +17,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(TRAFFIC_SOURCES
         src/road.cc
-        src/car.cc
-        src/pool.cc
+        src/car.cu
         src/traffic.cc
 )
 add_executable(traffic ${TRAFFIC_SOURCES})
@@ -28,3 +27,4 @@ target_include_directories(traffic PRIVATE
     ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIRS})
 target_include_directories(traffic PUBLIC include)
 
+target_compile_options(traffic PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-G>)
