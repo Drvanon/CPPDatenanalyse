@@ -5,7 +5,6 @@
 #include <time.h>
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -61,6 +60,7 @@ int main () {
     SDL_Manager sdl = SDL_Manager();
 
     Road road = Road(3, &sdl);
+    sdl.draw_road();
     CarPool car_pool = CarPool(200);
 
     Uint32 lastupdate = SDL_GetTicks();

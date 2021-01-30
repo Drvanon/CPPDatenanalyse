@@ -1,4 +1,5 @@
 #include <iostream>
+#include <SDL2/SDL_image.h>
 #include "SDL_Manager.h"
 
 int SCREEN_WIDTH = 600;
@@ -43,6 +44,20 @@ void SDL_Manager::draw_to_road_texture() {
     if (SDL_SetRenderTarget(this->rend, this->road_texture) != 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set render target to road texture: %s", SDL_GetError());
     }
+}
+
+void SDL_Manager::save_road_texture(const char* file_name) {
+    SDL_Renderer* renderer = this->rend;
+    SDL_Texture* texture = this->road_texture;
+    SDL_Texture* target = SDL_GetRenderTarget(renderer);
+    SDL_SetRenderTarget(renderer, texture);
+    int width, height;
+    SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    SDL_RenderReadPixels(renderer, NULL, surface->format->format, surface->pixels, surface->pitch);
+    IMG_SavePNG(surface, file_name);
+    SDL_FreeSurface(surface);
+    SDL_SetRenderTarget(renderer, target);
 }
 
 void SDL_Manager::draw_road() {

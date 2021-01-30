@@ -17,6 +17,7 @@ class SDL_Manager {
         void draw_to_road_texture();
         void draw_road();
         void present();
+        void save_road_texture(const char* file_name);
         ~SDL_Manager();
 };
 
