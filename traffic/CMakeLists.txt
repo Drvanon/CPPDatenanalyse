@@ -19,6 +19,7 @@ set(TRAFFIC_SOURCES
         src/road.cc
         src/car.cu
         src/traffic.cc
+        src/SDL_Manager.cc
 )
 add_executable(traffic ${TRAFFIC_SOURCES})
 target_link_libraries(traffic PRIVATE
@@ -28,3 +29,4 @@ target_include_directories(traffic PRIVATE
 target_include_directories(traffic PUBLIC include)
 
 target_compile_options(traffic PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-G>)
+
