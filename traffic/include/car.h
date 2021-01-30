@@ -1,13 +1,11 @@
 #ifndef CAR_H
 #define CAR_H
 
-#include "cuda_runtime.h"
-#include <SDL2/SDL.h>
 #include <Eigen/Dense>
 #include <vector>
 #include <random>
 
-#include "pool.h"
+#include "SDL_Manager.h"
 #include "road.h"
 
 struct Car {
@@ -35,7 +33,7 @@ class CarPool {
         int new_car(Eigen::Vector2f pos);
         void behaviour(Road* road);
         void physics(float dT);
-        void display(SDL_Renderer* renderer, Road* road);
+        void display(SDL_Manager& sdl, Road* road);
         CarPool(int size);
         ~CarPool();
 };

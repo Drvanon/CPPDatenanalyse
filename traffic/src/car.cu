@@ -165,10 +165,10 @@ __host__ void CarPool::physics(float dT) {
     cudaDeviceSynchronize();
 }
 
-void CarPool::display(SDL_Renderer* rend, Road* road) {
-    SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);
+void CarPool::display(SDL_Manager& sdl, Road* road) {
     CUDA_WARN(cudaMemcpy(this->host_cars, this->device_cars, size * sizeof(Car), cudaMemcpyDeviceToHost));
 
+    SDL_SetRenderDrawColor(sdl.rend, 255, 0, 0, 255);
     for (int i=0;i<this->index;i++) {
         Car car = this->host_cars[i];
         if (!car.alive) continue;
@@ -178,7 +178,7 @@ void CarPool::display(SDL_Renderer* rend, Road* road) {
         rect.y = pos(1);
         rect.w = CAR_LENGTH;
         rect.h = CAR_WIDTH;
-        SDL_RenderFillRect(rend, &rect);
+        SDL_RenderFillRect(sdl.rend, &rect);
     }
 }
 

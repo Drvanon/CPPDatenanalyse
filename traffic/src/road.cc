@@ -11,72 +11,46 @@ int GAP_LENGTH = 4;
 
 typedef Eigen::Vector2f vec2f;
 
-Road::Road(int lanes, SDL_Renderer* rend, SDL_Texture* texture):
-    lanes(lanes), rend(rend), texture(texture)
-{
-    int w, h;
-    SDL_QueryTexture(this->texture, NULL, NULL, &w, &h);
-    this->repeats = (h - TOP_MARGIN * 2) / (LANE_MARGIN + lanes * LANE_WIDTH);
-    this->length = this->repeats * w;
+Road::Road(int lanes, SDL_Manager* sdl): sdl(sdl), lanes(lanes) {
+    this->repeats = (sdl->h - TOP_MARGIN * 2) / (LANE_MARGIN + lanes * LANE_WIDTH);
+    this->length = this->repeats * sdl->w;
 
     this->fill_texture();
 }
 
 void Road::fill_texture() {
-    int w, h;
-    SDL_QueryTexture(this->texture, NULL, NULL, &w, &h);
-
-    if (SDL_SetRenderTarget(this->rend, this->texture) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set render target to road texture: %s", SDL_GetError());
-    }
+    this->sdl->draw_to_road_texture();
+    int w = this->sdl->w;
+    int h = this->sdl->h;
 
     for (int i=0; i<this->repeats; i++) {
         int height = i * (lanes * LANE_WIDTH + LANE_MARGIN) + TOP_MARGIN;
 
-        SDL_SetRenderDrawColor(this->rend, 255, 255, 255, 255);
-        SDL_RenderDrawLine(this->rend, 0, height, w, height);
-        SDL_RenderDrawLine(this->rend, 0, height + lanes * LANE_WIDTH, w, height + lanes * LANE_WIDTH);
+        SDL_SetRenderDrawColor(this->sdl->rend, 255, 255, 255, 255);
+        SDL_RenderDrawLine(this->sdl->rend, 0, height, w, height);
+        SDL_RenderDrawLine(this->sdl->rend, 0, height + lanes * LANE_WIDTH, w, height + lanes * LANE_WIDTH);
 
         for (int j=1; j<this->lanes; j++ ) {
             int n_stripes = w / (STRIPE_LENGTH + GAP_LENGTH);
             for (int k=0; k - 1 < n_stripes; k++) {
                 SDL_RenderDrawLine(
-                        this->rend,
+                        this->sdl->rend,
                         k * (STRIPE_LENGTH + GAP_LENGTH), height + j * LANE_WIDTH,
                         k * (STRIPE_LENGTH + GAP_LENGTH) + STRIPE_LENGTH, height + j * LANE_WIDTH
                 );
             }
         }
     }
-
-    if (SDL_SetRenderTarget(this->rend, NULL) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't reset render target: %s", SDL_GetError());
-        exit(EXIT_FAILURE);
-    }
 }
 
 vec2f Road::get_display_position(vec2f pos) {
-    int w, h;
-    SDL_QueryTexture(this->texture, NULL, NULL, &w, &h);
+    int w = this->sdl->w;
+    int h = this->sdl->h;
+
     vec2f ret_pos(
         fmod(pos(0), w),
         (int)(pos(0) / w) * (this->lanes * LANE_WIDTH + LANE_MARGIN) + TOP_MARGIN + pos(1) + 3
     );
 
     return ret_pos;
-}
-
-void Road::display(SDL_Renderer* rend) {
-    if (SDL_SetRenderTarget(rend, NULL) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set render target: %s", SDL_GetError());
-    }
-
-    if (SDL_RenderCopy(rend, this->texture, NULL, NULL) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not copy the texture to the screen: %s", SDL_GetError());
-    };
-}
-
-Road::~Road() {
-    std::cout << "Destroying the texture" << std::endl;
-    SDL_DestroyTexture(this->texture);
 }

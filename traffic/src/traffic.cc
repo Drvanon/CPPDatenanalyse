@@ -9,17 +9,14 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "SDL_Manager.h"
 #include "car.h"
 #include "traffic.h"
-#include "pool.h"
 #include "road.h"
 
 typedef Eigen::Vector2f vec2f;
 
 int CAR_CREATION_PERIOD = 5000;
-
-int SCREEN_WIDTH = 600;
-int SCREEN_HEIGHT = 650;
 
 enum SIM_STATE {
     RUNNING,
@@ -29,7 +26,6 @@ enum SIM_STATE {
 
 Uint32 create_car(Uint32 last_car_creation, CarPool& car_pool) {
     if (SDL_GetTicks() - last_car_creation > CAR_CREATION_PERIOD) {
-        // Create path
         car_pool.new_car(vec2f(8500, 0));
         return SDL_GetTicks();
     }
@@ -62,34 +58,9 @@ SIM_STATE handle_events(SIM_STATE cur_state) {
 
 int main () {
     srand(time(NULL));
-    SDL_Window* window;
+    SDL_Manager sdl = SDL_Manager();
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
-         exit(EXIT_FAILURE);
-    }
-    window = SDL_CreateWindow(
-        "Traffic Simulation",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        SCREEN_WIDTH, SCREEN_HEIGHT,
-        SDL_WINDOW_OPENGL
-    );
-
-    if (window == NULL) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open window: %s", SDL_GetError());
-        exit(EXIT_FAILURE);
-    }
-
-    SDL_Renderer* rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    SDL_Texture* road_texture = SDL_CreateTexture(
-        rend,
-        SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        SCREEN_WIDTH, SCREEN_HEIGHT
-    );
-
-    Road road = Road(3, rend, road_texture);
-    CarPool car_pool = init_carpool(&road);
+    Road road = Road(3, &sdl);
     CarPool car_pool = CarPool(200);
 
     Uint32 lastupdate = SDL_GetTicks();
@@ -109,13 +80,12 @@ int main () {
             car_pool.behaviour(&road);
         }
 
-        SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
-        SDL_RenderClear(rend);
+        sdl.clear();
 
-        road.display(rend);
-        car_pool.display(rend, &road);
+        sdl.draw_road();
+        car_pool.display(sdl, &road);
 
-        SDL_RenderPresent(rend);
+        sdl.present();
     }
 
     return 0;
