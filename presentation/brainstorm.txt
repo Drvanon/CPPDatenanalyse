@@ -1,0 +1,43 @@
+Learning objectives:
+    - Hardware architecture
+        - Architecture CPU (host)
+            - 4/16 cores
+            - L1, L2, L3 caches
+                - "Local" copy of RAM
+                - Very small (kilobytes)
+            - Branch prediction
+        - Architecture GPU (device)
+            - Many cores (100-1000)
+            - Smaller memory
+            - 1/2 Caches, even smaller
+            - No branch prediction
+    - Compiling
+        - nvcc
+        - .h / .cu
+        - CMake
+            - Compatibility across platforms
+            - Library management
+    - Writing code
+        - Compiler hints
+            - __host__ function invoked by host
+            - __device__ function invoked by host
+            - __global__ function invoked by host to run _kernel_ on device
+        - Moving memory
+            - cudaMalloc
+            - cudaMemcpy
+                - Direction
+    - Debugging
+        - cuda-memcheck
+        - cuda-gdb
+    - Gotchas
+        - Host can only hold pointers to device
+        - Device can only take direct information in function calls from host
+        - When to use the GPU
+            - Linear, parallelize-able
+            - Large data set
+            - Few conditional branches
+        - When not to use GPU
+            - Serial operations
+            - Much conditional logic
+            - No repetitions
+            - Small data with few operations
